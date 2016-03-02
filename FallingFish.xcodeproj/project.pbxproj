@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8211890D1C878BDD00816F37 /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890C1C878BDD00816F37 /* NavigationViewController.swift */; };
+		8211890F1C8791F700816F37 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890E1C8791F700816F37 /* MenuViewController.swift */; };
 		82E6169A1C8785F2005893B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E616991C8785F2005893B1 /* AppDelegate.swift */; };
 		82E6169C1C8785F2005893B1 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82E6169B1C8785F2005893B1 /* GameScene.sks */; };
 		82E6169E1C8785F2005893B1 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E6169D1C8785F2005893B1 /* GameScene.swift */; };
@@ -36,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8211890C1C878BDD00816F37 /* NavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
+		8211890E1C8791F700816F37 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		82E616961C8785F2005893B1 /* FallingFish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FallingFish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82E616991C8785F2005893B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82E6169B1C8785F2005893B1 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -105,10 +109,12 @@
 				82E6169B1C8785F2005893B1 /* GameScene.sks */,
 				82E6169D1C8785F2005893B1 /* GameScene.swift */,
 				82E6169F1C8785F2005893B1 /* GameViewController.swift */,
+				8211890E1C8791F700816F37 /* MenuViewController.swift */,
 				82E616A11C8785F2005893B1 /* Main.storyboard */,
 				82E616A41C8785F2005893B1 /* Assets.xcassets */,
 				82E616A61C8785F2005893B1 /* LaunchScreen.storyboard */,
 				82E616A91C8785F2005893B1 /* Info.plist */,
+				8211890C1C878BDD00816F37 /* NavigationViewController.swift */,
 			);
 			path = FallingFish;
 			sourceTree = "<group>";
@@ -263,6 +269,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8211890D1C878BDD00816F37 /* NavigationViewController.swift in Sources */,
+				8211890F1C8791F700816F37 /* MenuViewController.swift in Sources */,
 				82E6169E1C8785F2005893B1 /* GameScene.swift in Sources */,
 				82E616A01C8785F2005893B1 /* GameViewController.swift in Sources */,
 				82E6169A1C8785F2005893B1 /* AppDelegate.swift in Sources */,
@@ -494,6 +502,7 @@
 				82E616C41C8785F2005893B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		82E616C51C8785F2005893B1 /* Build configuration list for PBXNativeTarget "FallingFishTests" */ = {
 			isa = XCConfigurationList;
@@ -502,6 +511,7 @@
 				82E616C71C8785F2005893B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		82E616C81C8785F2005893B1 /* Build configuration list for PBXNativeTarget "FallingFishUITests" */ = {
 			isa = XCConfigurationList;
@@ -510,6 +520,7 @@
 				82E616CA1C8785F2005893B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
