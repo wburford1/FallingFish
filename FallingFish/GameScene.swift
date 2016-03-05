@@ -17,6 +17,28 @@ class GameScene: SKScene {
         myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
         
         self.addChild(myLabel)
+        
+        let fish = SKSpriteNode(imageNamed: "JesusFish.png")
+        let fishWidth = size.width/15
+        fish.size = CGSize(width: fishWidth, height: (fishWidth)/(500/139))
+        fish.position = CGPoint(x: size.width/2, y: size.height*3/4)
+        let fishXMotion = SKAction.moveBy(CGVector(dx: -size.width/5, dy: 0), duration: 5)
+        fish.runAction(fishXMotion)
+        self.addChild(fish)
+        
+        //wall placement does not work correctly on iPads and iPhone 4s
+        //Also, i think right wall is a tad bigger than the left one
+        //but have no idea how the size.width thing works so i'm giving up for now
+        let leftWall = SKSpriteNode(imageNamed: "solidWall.png")
+        leftWall.size = CGSize(width: size.width/20, height: size.height)
+        leftWall.position = CGPoint(x: size.width/3-size.width/20, y: size.height/2)
+        self.addChild(leftWall)
+        
+        let rightWall = SKSpriteNode(imageNamed: "solidWall.png")
+        rightWall.size = CGSize(width: size.width/20, height: size.height)
+        //rightWall.position = CGPoint(x: size.width+size.width/10.0), y: size.height/2)
+        rightWall.position = CGPoint(x:size.width/1.4, y: size.height/2)
+        self.addChild(rightWall)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
