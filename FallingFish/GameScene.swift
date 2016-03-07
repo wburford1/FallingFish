@@ -9,32 +9,36 @@
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    
+    lazy var fishVelXComp : CGFloat = -100000
+    lazy var characters : NSMutableArray = NSMutableArray()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
         static let All       : UInt32 = UInt32.max
-        static let Fish   : UInt32 = 0b0       // 0
-        static let Wall   : UInt32 = 0b1       // 1
-        static let Death  : UInt32 = 0b10      // 2
+        static let Fish   : UInt32 = 0b1        // 1
+        static let Wall   : UInt32 = 0b10       // 2
+        static let Death  : UInt32 = 0b11       // 3
     }
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!"
+        myLabel.text = "UNDER THE SEA"
         myLabel.fontSize = 45
         myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
         
         self.addChild(myLabel)
         
+        self.physicsWorld.contactDelegate = self;
+        fishVelXComp = self.size.width/5
+
         let fish = SKSpriteNode(imageNamed: "JesusFish.png")
         let fishWidth = size.width/15
         fish.size = CGSize(width: fishWidth, height: (fishWidth)/(500/139))
         fish.position = CGPoint(x: size.width/2, y: size.height*3/4)
         fish.physicsBody = SKPhysicsBody(rectangleOfSize: fish.size)
         fish.physicsBody?.dynamic = true
-        fish.physicsBody?.collisionBitMask = 0b0
+        fish.physicsBody?.collisionBitMask = PhysicsCategory.Fish
         fish.physicsBody?.categoryBitMask = PhysicsCategory.Fish
         fish.physicsBody?.contactTestBitMask = PhysicsCategory.Wall | PhysicsCategory.Death
         fish.physicsBody?.restitution = 1.0
@@ -52,12 +56,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftWall.position = CGPoint(x: size.width/3-size.width/20, y: size.height/2)
         leftWall.physicsBody = SKPhysicsBody(rectangleOfSize: leftWall.size)
         leftWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
-        leftWall.physicsBody?.collisionBitMask = 0b1
+        leftWall.physicsBody?.collisionBitMask = PhysicsCategory.Wall
         leftWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
         leftWall.physicsBody?.affectedByGravity = false
         leftWall.physicsBody?.dynamic = true
         leftWall.physicsBody?.restitution = 1;
         leftWall.physicsBody?.friction = 0;
+        leftWall.name = "left wall"
         self.addChild(leftWall)
         
         let rightWall = SKSpriteNode(imageNamed: "solidWall.png")
@@ -67,11 +72,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall.physicsBody = SKPhysicsBody(rectangleOfSize: rightWall.size)
         rightWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         rightWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
-        rightWall.physicsBody?.collisionBitMask = 0b1
+        rightWall.physicsBody?.collisionBitMask = PhysicsCategory.Wall
         rightWall.physicsBody?.affectedByGravity = false
         rightWall.physicsBody?.dynamic = true
         rightWall.physicsBody?.restitution = 1;
         rightWall.physicsBody?.friction = 0;
+        rightWall.name = "right wall"
         self.addChild(rightWall)
         
         let sceneObjects = NSMutableArray()
@@ -83,7 +89,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func playInfinitGame(sceneObjects: NSMutableArray){
         let fish = sceneObjects[0]
-        fish.physicsBody?!.velocity = (CGVector(dx: size.width, dy: 0))
+        characters = sceneObjects
+        fish.physicsBody?!.velocity = (CGVector(dx: fishVelXComp, dy: 0))
         print(fish.physicsBody)
     }
     
@@ -92,8 +99,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         for touch in touches {
             let location = touch.locationInNode(self)
+            let fish = characters[0]
+            let dist = location.y - fish.position.y
+            fish.physicsBody?!.velocity.dy = dist
             
-            let sprite = SKSpriteNode(imageNamed:"Spaceship")
+            /*let sprite = SKSpriteNode(imageNamed:"Spaceship")
             
             sprite.xScale = 0.5
             sprite.yScale = 0.5
@@ -103,7 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             sprite.runAction(SKAction.repeatActionForever(action))
             
-            self.addChild(sprite)
+            self.addChild(sprite)*/
         }
     }
    
@@ -113,7 +123,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBeginContact(contact: SKPhysicsContact) {
         print("didbegincontact")
-        // 1
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
         if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
@@ -124,7 +133,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
-        // 2
         if ((firstBody.categoryBitMask & PhysicsCategory.Fish != 0) &&
             (secondBody.categoryBitMask & PhysicsCategory.Wall != 0)) {
                 fishDidCollideWithWall(firstBody.node as! SKSpriteNode, wall: secondBody.node as! SKSpriteNode)
@@ -133,9 +141,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
+        let idkWhyThisDontWork = fishVelXComp
         print("collision with wall")
-        let originalVelocity = fish.physicsBody?.velocity
-        fish.physicsBody?.velocity = CGVector(dx: (originalVelocity?.dx)!*(-1), dy: 0)
+        if(wall.name == "right wall"){
+            fish.physicsBody?.velocity.dx = idkWhyThisDontWork*(-1)
+        }
+        else{
+            fish.physicsBody?.velocity.dx = idkWhyThisDontWork
+        }
         //fish.removeFromParent()
         
     }
