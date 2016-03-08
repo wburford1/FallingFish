@@ -5,12 +5,12 @@
 //  Created by Will Burford on 3/2/16.
 //  Copyright (c) 2016 Will Burford. All rights reserved.
 //
-
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var fishVelXComp : CGFloat = -100000
     lazy var characters : NSMutableArray = NSMutableArray()
+    lazy var alive : Bool = false
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -22,10 +22,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
+        
         let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "UNDER THE SEA"
+        myLabel.text = "CLASSIC NOONS"
         myLabel.fontSize = 45
         myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
+        myLabel.zPosition = -100
         
         self.addChild(myLabel)
         
@@ -80,18 +82,54 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall.name = "right wall"
         self.addChild(rightWall)
         
-        let sceneObjects = NSMutableArray()
-        sceneObjects.addObject(fish)
-        sceneObjects.addObject(leftWall)
-        sceneObjects.addObject(rightWall)
-        playInfinitGame(sceneObjects)
+        let anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
+        anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
+        anemone.physicsBody = SKPhysicsBody(rectangleOfSize: anemone.size)
+        anemone.physicsBody?.categoryBitMask = PhysicsCategory.Death
+        anemone.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
+        anemone.physicsBody?.collisionBitMask = PhysicsCategory.None
+        anemone.physicsBody?.affectedByGravity = false
+        anemone.physicsBody?.dynamic = true
+        anemone.physicsBody?.restitution = 1;
+        anemone.physicsBody?.friction = 0;
+        anemone.name = "anemone"
+        
+        
+        characters.addObject(fish)
+        characters.addObject(leftWall)
+        characters.addObject(rightWall)
+        characters.addObject(anemone)
+        playInfinitGame()
     }
     
-    func playInfinitGame(sceneObjects: NSMutableArray){
-        let fish = sceneObjects[0]
-        characters = sceneObjects
-        fish.physicsBody?!.velocity = (CGVector(dx: fishVelXComp, dy: 0))
-        print(fish.physicsBody)
+    func playInfinitGame(){
+        alive = true;
+        let fish = characters[0]
+        fish.physicsBody?!.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
+        let veryDeadlyThings = NSMutableArray()
+        for(var counter = 3;counter<characters.count; counter++){
+            veryDeadlyThings[counter-3] = characters[counter]
+        }
+        let startTime = NSDate()
+        let deathAppearanceInterval = 3.0
+        let deathAppearanceIntervalRadius = 2.0
+        while(alive){
+            let timeCheck = NSDate()
+            let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(startTime)
+            let side = Int(arc4random_uniform(2))
+            let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
+            let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
+            print(deadlyThing)
+            //maybe have to make new thead. Game doesn't start until loop stops
+            break;
+        }
+        
+    }
+    
+    func copySpriteNode(sprite: SKSpriteNode)-> SKSpriteNode{
+        let copy = sprite.copy() as! SKSpriteNode
+        copy.physicsBody = sprite.physicsBody?.copy() as! SKPhysicsBody
+        return copy;
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -143,11 +181,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
         let idkWhyThisDontWork = fishVelXComp
         print("collision with wall")
+        //let fishImage = UIImage(named: "JesusFish.png")
         if(wall.name == "right wall"){
             fish.physicsBody?.velocity.dx = idkWhyThisDontWork*(-1)
+            fish.texture = SKTexture(imageNamed: "JesusFish.png")
         }
         else{
             fish.physicsBody?.velocity.dx = idkWhyThisDontWork
+            fish.texture = SKTexture(imageNamed: "JesusFish_Flipped.png")
         }
         //fish.removeFromParent()
         
