@@ -12,6 +12,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var characters : NSMutableArray = NSMutableArray()
     lazy var alive : Bool = false
     lazy var deadlyScaler : CGFloat = 1
+    lazy var infinitStartTime : NSDate = NSDate()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -112,21 +113,98 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         alive = true;
         let fish = characters[0]
         fish.physicsBody?!.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
-        let deadlyThread = NSThread(target: self, selector: "spawnRandomDeadlyThings", object: nil)
-        deadlyThread.start()
+        //let deadlyThread = NSThread(target: self, selector: "spawnRandomDeadlyThings", object: nil)
+        //deadlyThread.start()
+        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsLeft", object: nil)
+        let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsRight", object: nil)
+        deadlyLeftThread.start()
+        deadlyRightThread.start()
+        infinitStartTime = NSDate()
     }
     
-    func spawnRandomDeadlyThings(){
+    func endInfinitGame(){
+        let timeCheck = NSDate()
+        let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
+        let scoreLabel = SKLabelNode(fontNamed: "Gothic")
+        let score = Int(timeSinceStart*100)
+        scoreLabel.text = "Score: " + String(score)
+        scoreLabel.position = CGPoint(x: size.width/2, y: size.height/5)
+        self.addChild(scoreLabel)
+        
+        let youDied = SKLabelNode(fontNamed: "Gothic")
+        youDied.text = "YOU DIED"
+        youDied.position = CGPoint(x: size.width/2, y: size.height/4)
+        self.addChild(youDied)
+        
+    }
+    
+    func spawnRandomDeadlyThingsLeft(){
         let veryDeadlyThings = NSMutableArray()
         for(var counter = 3;counter<characters.count; counter++){
             veryDeadlyThings[counter-3] = characters[counter]
         }
-        let startTime = NSDate()
-        let deathAppearanceInterval = 3.0
-        let deathAppearanceIntervalRadius = 2.0
+        let deathAppearanceInterval = 2.0
+        let deathAppearanceIntervalRadius = 1.0
         while(alive){
-            let timeCheck = NSDate()
-            let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(startTime)
+            let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
+            print("object type = ", objectType)
+            let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
+            
+            let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
+            deadlyThing.runAction(spin)
+            let wall = characters[1]
+            deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
+            deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
+            
+            self.addChild(deadlyThing)
+            
+            let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
+            print("sleep plus minus = ", sleepRadius)
+            let sleepTime = deathAppearanceInterval + sleepRadius
+            if(sleepTime>0){
+                sleep(UInt32(sleepTime))
+            }
+        }
+        endInfinitGame()
+    }
+    
+    func spawnRandomDeadlyThingsRight(){
+        let veryDeadlyThings = NSMutableArray()
+        for(var counter = 3;counter<characters.count; counter++){
+            veryDeadlyThings[counter-3] = characters[counter]
+        }
+        let deathAppearanceInterval = 2.0
+        let deathAppearanceIntervalRadius = 1.0
+        while(alive){
+            let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
+            print("object type = ", objectType)
+            let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
+            
+            let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
+            deadlyThing.runAction(spin)
+            let wall = characters[2]
+            deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
+            deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
+            
+            self.addChild(deadlyThing)
+            
+            let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
+            print("sleep plus minus = ", sleepRadius)
+            let sleepTime = deathAppearanceInterval + sleepRadius
+            if(sleepTime>0){
+                sleep(UInt32(sleepTime))
+            }
+        }
+    }
+    
+    func spawnRandomDeadlyThings(){//not using this method anymore
+        let veryDeadlyThings = NSMutableArray()
+        for(var counter = 3;counter<characters.count; counter++){
+            veryDeadlyThings[counter-3] = characters[counter]
+        }
+        let deathAppearanceInterval = 2.0
+        let deathAppearanceIntervalRadius = 1.0
+        while(alive){
             let side = Int(arc4random_uniform(2))
             let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
             print("object type = ", objectType)
@@ -155,6 +233,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 sleep(UInt32(sleepTime))
             }
         }
+        endInfinitGame()
     }
     
     func copySpriteNode(sprite: SKSpriteNode)-> SKSpriteNode{
@@ -226,10 +305,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func fishDidCollideWithDeath(fish: SKSpriteNode, death: SKSpriteNode){
         print("well at least it called the death method")
         fish.removeFromParent()
-        let youDied = SKLabelNode(fontNamed: "Gothic")
-        youDied.text = "YOU DIED"
-        youDied.position = CGPoint(x: size.width/2, y: size.height/4)
-        self.addChild(youDied)
         alive = false;
     }
     
