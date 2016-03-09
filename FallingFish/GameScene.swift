@@ -13,6 +13,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var alive : Bool = false
     lazy var deadlyScaler : CGFloat = 1
     lazy var infinitStartTime : NSDate = NSDate()
+    lazy var infinitEndTime : NSDate = NSDate()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -34,6 +35,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(myLabel)
         
         self.physicsWorld.contactDelegate = self;
+        self.physicsWorld.gravity = CGVector(dx: 0, dy: 0.05) //added to fix apparent slow down of deadlyThings
         fishVelXComp = self.size.width/5
 
         let fish = SKSpriteNode(imageNamed: "JesusFish.png")
@@ -94,7 +96,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anemone.physicsBody?.categoryBitMask = PhysicsCategory.Death
         anemone.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
         anemone.physicsBody?.collisionBitMask = PhysicsCategory.None
-        anemone.physicsBody?.affectedByGravity = false
+        anemone.physicsBody?.affectedByGravity = true
         anemone.physicsBody?.dynamic = true
         anemone.physicsBody?.restitution = 1;
         anemone.physicsBody?.friction = 0;
@@ -117,14 +119,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //deadlyThread.start()
         let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsLeft", object: nil)
         let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsRight", object: nil)
+        let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
         deadlyLeftThread.start()
         deadlyRightThread.start()
+        scoreTracker.start()
         infinitStartTime = NSDate()
     }
     
+    func trackScore(){
+        let scoreboard = SKLabelNode(fontNamed: "Digital")
+        scoreboard.position = CGPoint(x: size.width-size.width/2.9, y: size.height-size.height/20)
+        scoreboard.text = "0000"
+        self.addChild(scoreboard)
+        var timeCheck = NSDate()
+        while(alive){
+            timeCheck = NSDate()
+            let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
+            scoreboard.text = String(Int(timeSinceStart*100))
+        }
+        infinitEndTime = timeCheck
+    }
+    
     func endInfinitGame(){
-        let timeCheck = NSDate()
-        let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
+        let timeSinceStart: Double =  infinitEndTime.timeIntervalSinceDate(infinitStartTime)
         let scoreLabel = SKLabelNode(fontNamed: "Gothic")
         let score = Int(timeSinceStart*100)
         scoreLabel.text = "Score: " + String(score)
@@ -185,7 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let wall = characters[2]
             deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
             deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
-            
+            print(deadlyThing)
             self.addChild(deadlyThing)
             
             let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
