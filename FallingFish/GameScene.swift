@@ -11,6 +11,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var fishVelXComp : CGFloat = -100000
     lazy var characters : NSMutableArray = NSMutableArray()
     lazy var alive : Bool = false
+    lazy var deadlyScaler : CGFloat = 1
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -40,13 +41,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         fish.position = CGPoint(x: size.width/2, y: size.height*3/4)
         fish.physicsBody = SKPhysicsBody(rectangleOfSize: fish.size)
         fish.physicsBody?.dynamic = true
-        fish.physicsBody?.collisionBitMask = PhysicsCategory.Fish
+        fish.physicsBody?.collisionBitMask = PhysicsCategory.None
         fish.physicsBody?.categoryBitMask = PhysicsCategory.Fish
         fish.physicsBody?.contactTestBitMask = PhysicsCategory.Wall | PhysicsCategory.Death
         fish.physicsBody?.restitution = 1.0
         fish.physicsBody?.friction = 0;
         fish.physicsBody?.affectedByGravity = false
         fish.physicsBody?.usesPreciseCollisionDetection = true;
+        fish.physicsBody?.linearDamping = 0;
+        fish.physicsBody?.angularDamping = 0;
         //fish.physicsBody?.velocity = (CGVector(dx: size.width/10, dy: 0))
         self.addChild(fish)
         
@@ -58,13 +61,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftWall.position = CGPoint(x: size.width/3-size.width/20, y: size.height/2)
         leftWall.physicsBody = SKPhysicsBody(rectangleOfSize: leftWall.size)
         leftWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
-        leftWall.physicsBody?.collisionBitMask = PhysicsCategory.Wall
+        leftWall.physicsBody?.collisionBitMask = PhysicsCategory.None
         leftWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
         leftWall.physicsBody?.affectedByGravity = false
-        leftWall.physicsBody?.dynamic = true
+        leftWall.physicsBody?.dynamic = false
         leftWall.physicsBody?.restitution = 1;
         leftWall.physicsBody?.friction = 0;
         leftWall.name = "left wall"
+        leftWall.zPosition = -50
         self.addChild(leftWall)
         
         let rightWall = SKSpriteNode(imageNamed: "solidWall.png")
@@ -74,12 +78,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall.physicsBody = SKPhysicsBody(rectangleOfSize: rightWall.size)
         rightWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         rightWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
-        rightWall.physicsBody?.collisionBitMask = PhysicsCategory.Wall
+        rightWall.physicsBody?.collisionBitMask = PhysicsCategory.None
         rightWall.physicsBody?.affectedByGravity = false
-        rightWall.physicsBody?.dynamic = true
+        rightWall.physicsBody?.dynamic = false
         rightWall.physicsBody?.restitution = 1;
         rightWall.physicsBody?.friction = 0;
         rightWall.name = "right wall"
+        rightWall.zPosition = -50
         self.addChild(rightWall)
         
         let anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
@@ -92,6 +97,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anemone.physicsBody?.dynamic = true
         anemone.physicsBody?.restitution = 1;
         anemone.physicsBody?.friction = 0;
+        anemone.physicsBody?.linearDamping = 0;
         anemone.name = "anemone"
         
         
@@ -106,6 +112,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         alive = true;
         let fish = characters[0]
         fish.physicsBody?!.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
+        let deadlyThread = NSThread(target: self, selector: "spawnRandomDeadlyThings", object: nil)
+        deadlyThread.start()
+    }
+    
+    func spawnRandomDeadlyThings(){
         let veryDeadlyThings = NSMutableArray()
         for(var counter = 3;counter<characters.count; counter++){
             veryDeadlyThings[counter-3] = characters[counter]
@@ -118,12 +129,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(startTime)
             let side = Int(arc4random_uniform(2))
             let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
+            print("object type = ", objectType)
             let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
-            print(deadlyThing)
-            //maybe have to make new thead. Game doesn't start until loop stops
-            break;
+            
+            if(side==0){//left side
+                let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
+                deadlyThing.runAction(spin)
+                let wall = characters[1]
+                //deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
+                deadlyThing.position = CGPoint(x: size.width/2, y: size.height/2)
+                deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
+            }
+            else if(side==1){
+                let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
+                deadlyThing.runAction(spin)
+                let wall = characters[2]
+                deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
+                deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
+            }
+            self.addChild(deadlyThing)
+            
+            let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
+            print("sleep plus minus = ", sleepRadius)
+            let sleepTime = deathAppearanceInterval + sleepRadius
+            if(sleepTime>0){
+                sleep(UInt32(sleepTime))
+            }
         }
-        
     }
     
     func copySpriteNode(sprite: SKSpriteNode)-> SKSpriteNode{
@@ -175,7 +207,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             (secondBody.categoryBitMask & PhysicsCategory.Wall != 0)) {
                 fishDidCollideWithWall(firstBody.node as! SKSpriteNode, wall: secondBody.node as! SKSpriteNode)
         }
+        else if((firstBody.categoryBitMask & PhysicsCategory.Fish != 0) &&
+            (secondBody.categoryBitMask & PhysicsCategory.Death != 0)) {
+                print("should die now")
+                fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
+        }
+        else{
+            print("first = ", firstBody.categoryBitMask, ", second = ", secondBody.categoryBitMask)
+            print("fish = ",PhysicsCategory.Fish)
+            print(firstBody)
+            print(secondBody)
+        }
         
+    }
+    
+    func fishDidCollideWithDeath(fish: SKSpriteNode, death: SKSpriteNode){
+        print("well at least it called the death method")
+        fish.removeFromParent()
+        let youDied = SKLabelNode(fontNamed: "Gothic")
+        youDied.text = "YOU DIED"
+        youDied.position = CGPoint(x: size.width/2, y: size.height/4)
+        self.addChild(youDied)
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
