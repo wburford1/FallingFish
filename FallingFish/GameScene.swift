@@ -21,6 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         static let Fish   : UInt32 = 0b1        // 1
         static let Wall   : UInt32 = 0b10       // 2
         static let Death  : UInt32 = 0b11       // 3
+        static let BadWall : UInt32 = 0b111       // 4
     }
     
     override func didMoveToView(view: SKView) {
@@ -89,6 +90,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall.name = "right wall"
         rightWall.zPosition = -50
         self.addChild(rightWall)
+        
+        let topWall = SKSpriteNode(imageNamed: "flatWall.png")
+        topWall.size = CGSize(width: size.width*2, height: size.height/32-size.height/33)
+        topWall.position = CGPoint(x:0, y: size.height)
+        topWall.physicsBody = SKPhysicsBody(rectangleOfSize: topWall.size)
+        topWall.physicsBody?.categoryBitMask = PhysicsCategory.BadWall
+        topWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
+        topWall.physicsBody?.collisionBitMask = PhysicsCategory.None
+        topWall.physicsBody?.affectedByGravity = false
+        topWall.physicsBody?.dynamic = false
+        topWall.physicsBody?.restitution = 1;
+        topWall.physicsBody?.friction = 0;
+        topWall.name = "top wall"
+        self.addChild(topWall)
+        
+        let lowWall = SKSpriteNode(imageNamed: "flatWall.png")
+        lowWall.size = CGSize(width: size.width*2, height: size.height/32-size.height/33)
+        lowWall.position = CGPoint(x:0, y: 0)
+        lowWall.physicsBody = SKPhysicsBody(rectangleOfSize: lowWall.size)
+        lowWall.physicsBody?.categoryBitMask = PhysicsCategory.BadWall
+        lowWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
+        lowWall.physicsBody?.collisionBitMask = PhysicsCategory.None
+        lowWall.physicsBody?.affectedByGravity = false
+        lowWall.physicsBody?.dynamic = false
+        lowWall.physicsBody?.restitution = 1;
+        lowWall.physicsBody?.friction = 0;
+        lowWall.name = "low wall"
+        self.addChild(lowWall)
+
         
         let anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
         anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
@@ -310,6 +340,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 print("should die now")
                 fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
         }
+            
+        else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && (secondBody.categoryBitMask == PhysicsCategory.BadWall)){
+            fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
+        }
+            
         else{
             print("first = ", firstBody.categoryBitMask, ", second = ", secondBody.categoryBitMask)
             print("fish = ",PhysicsCategory.Fish)
