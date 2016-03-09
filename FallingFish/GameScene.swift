@@ -136,8 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
                 deadlyThing.runAction(spin)
                 let wall = characters[1]
-                //deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
-                deadlyThing.position = CGPoint(x: size.width/2, y: size.height/2)
+                deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
                 deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
             }
             else if(side==1){
@@ -203,12 +202,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             secondBody = contact.bodyA
         }
         
-        if ((firstBody.categoryBitMask & PhysicsCategory.Fish != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.Wall != 0)) {
+        if ((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
+            (secondBody.categoryBitMask == PhysicsCategory.Wall)) {
+                print("supossed wall = ", secondBody.node)
+                print("category = ", secondBody.categoryBitMask)
+                print("wall = ", PhysicsCategory.Wall, "death = ",PhysicsCategory.Death)
                 fishDidCollideWithWall(firstBody.node as! SKSpriteNode, wall: secondBody.node as! SKSpriteNode)
         }
-        else if((firstBody.categoryBitMask & PhysicsCategory.Fish != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.Death != 0)) {
+        else if((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
+            (secondBody.categoryBitMask == PhysicsCategory.Death)) {
                 print("should die now")
                 fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
         }
@@ -228,11 +230,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         youDied.text = "YOU DIED"
         youDied.position = CGPoint(x: size.width/2, y: size.height/4)
         self.addChild(youDied)
+        alive = false;
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
+        print("did collide with wall")
         let idkWhyThisDontWork = fishVelXComp
-        print("collision with wall")
         //let fishImage = UIImage(named: "JesusFish.png")
         if(wall.name == "right wall"){
             fish.physicsBody?.velocity.dx = idkWhyThisDontWork*(-1)
