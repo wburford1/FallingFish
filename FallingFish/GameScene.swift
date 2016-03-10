@@ -14,6 +14,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var deadlyScaler : CGFloat = 1
     lazy var infinitStartTime : NSDate = NSDate()
     lazy var infinitEndTime : NSDate = NSDate()
+    lazy var fish : SKSpriteNode = SKSpriteNode()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -53,7 +54,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         fish.physicsBody?.usesPreciseCollisionDetection = true;
         fish.physicsBody?.linearDamping = 0;
         fish.physicsBody?.angularDamping = 0;
-        //fish.physicsBody?.velocity = (CGVector(dx: size.width/10, dy: 0))
         self.addChild(fish)
         
         //wall placement does not work correctly on iPads and iPhone 4s
@@ -90,6 +90,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall.zPosition = -50
         self.addChild(rightWall)
         
+        playInfinitGame()
+    }
+    
+    func makeAnemone() -> SKSpriteNode{
         let anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
         anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
         anemone.physicsBody = SKPhysicsBody(rectangleOfSize: anemone.size)
@@ -103,24 +107,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anemone.physicsBody?.linearDamping = 0;
         anemone.name = "anemone"
         
-        
-        characters.addObject(fish)
-        characters.addObject(leftWall)
-        characters.addObject(rightWall)
-        characters.addObject(anemone)
-        playInfinitGame()
+        return anemone
     }
     
     func playInfinitGame(){
         alive = true;
-        let fish = characters[0]
-        fish.physicsBody?!.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
+        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
         //let deadlyThread = NSThread(target: self, selector: "spawnRandomDeadlyThings", object: nil)
         //deadlyThread.start()
-        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsLeft", object: nil)
-        let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsRight", object: nil)
+        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsLeft", object: 0)
+        let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsRight", object: 1)
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
-        deadlyLeftThread.start()
+        //deadlyLeftThread.start()
         deadlyRightThread.start()
         scoreTracker.start()
         infinitStartTime = NSDate()
@@ -138,6 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreboard.text = String(Int(timeSinceStart*100))
         }
         infinitEndTime = timeCheck
+        
     }
     
     func endInfinitGame(){
@@ -207,14 +206,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
-            let sleepTime = deathAppearanceInterval + sleepRadius
+            let sleepTime = (deathAppearanceInterval + sleepRadius)*100000000
             if(sleepTime>0){
-                sleep(UInt32(sleepTime))
+                usleep(UInt32(sleepTime))
             }
         }
     }
     
-    func spawnRandomDeadlyThings(){//not using this method anymore
+    func spawnRandomDeadlyThings(side: Int){//not using this method anymore
         let veryDeadlyThings = NSMutableArray()
         for(var counter = 3;counter<characters.count; counter++){
             veryDeadlyThings[counter-3] = characters[counter]
@@ -222,7 +221,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let deathAppearanceInterval = 2.0
         let deathAppearanceIntervalRadius = 1.0
         while(alive){
-            let side = Int(arc4random_uniform(2))
+            //let side = Int(arc4random_uniform(2))
             let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
             print("object type = ", objectType)
             let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
@@ -330,7 +329,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let idkWhyThisDontWork = fishVelXComp
         //let fishImage = UIImage(named: "JesusFish.png")
         if(wall.name == "right wall"){
-            fish.physicsBody?.velocity.dx = idkWhyThisDontWork*(-1)
+            fish.physicsBody?.velocity.dx = fishVelXComp*(-1)
             fish.texture = SKTexture(imageNamed: "JesusFish.png")
         }
         else{
