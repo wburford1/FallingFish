@@ -9,12 +9,13 @@ import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var fishVelXComp : CGFloat = -100000
-    lazy var characters : NSMutableArray = NSMutableArray()
     lazy var alive : Bool = false
     lazy var deadlyScaler : CGFloat = 1
     lazy var infinitStartTime : NSDate = NSDate()
     lazy var infinitEndTime : NSDate = NSDate()
     lazy var fish : SKSpriteNode = SKSpriteNode()
+    lazy var walls : NSMutableArray = NSMutableArray()
+    let numberDeadlyThings : Int = 1
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -55,6 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         fish.physicsBody?.usesPreciseCollisionDetection = true;
         fish.physicsBody?.linearDamping = 0;
         fish.physicsBody?.angularDamping = 0;
+        self.fish = fish;
         self.addChild(fish)
         
         //wall placement does not work correctly on iPads and iPhone 4s
@@ -119,6 +121,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         lowWall.name = "low wall"
         self.addChild(lowWall)
         
+        walls.addObject(leftWall)
+        walls.addObject(rightWall)
+        walls.addObject(topWall)
+        walls.addObject(lowWall)
+        
         playInfinitGame()
     }
     
@@ -135,6 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anemone.physicsBody?.friction = 0;
         anemone.physicsBody?.linearDamping = 0;
         anemone.name = "anemone"
+        print("made anemone = ", anemone)
         
         return anemone
     }
@@ -144,10 +152,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
         //let deadlyThread = NSThread(target: self, selector: "spawnRandomDeadlyThings", object: nil)
         //deadlyThread.start()
-        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsLeft", object: 0)
-        let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThingsRight", object: 1)
+        let left = "left"
+        let right = "right"
+        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: left)//-5764607523034234877
+        let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: right)
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
-        //deadlyLeftThread.start()
+        deadlyLeftThread.start()
         deadlyRightThread.start()
         scoreTracker.start()
         infinitStartTime = NSDate()
@@ -183,7 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    func spawnRandomDeadlyThingsLeft(){
+    /*func spawnRandomDeadlyThingsLeft(){
         let veryDeadlyThings = NSMutableArray()
         for(var counter = 3;counter<characters.count; counter++){
             veryDeadlyThings[counter-3] = characters[counter]
@@ -223,8 +233,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         while(alive){
             let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
             print("object type = ", objectType)
-            let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
-            
+            let deadlyThing = makeAnemone();
             let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
             deadlyThing.runAction(spin)
             let wall = characters[2]
@@ -240,37 +249,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 usleep(UInt32(sleepTime))
             }
         }
-    }
+    }*/
     
-    func spawnRandomDeadlyThings(side: Int){//not using this method anymore
-        let veryDeadlyThings = NSMutableArray()
-        for(var counter = 3;counter<characters.count; counter++){
-            veryDeadlyThings[counter-3] = characters[counter]
-        }
+    func spawnRandomDeadlyThings(side: String){//not using this method anymore
         let deathAppearanceInterval = 2.0
         let deathAppearanceIntervalRadius = 1.0
         while(alive){
             //let side = Int(arc4random_uniform(2))
-            let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
+            let objectType = Int(arc4random_uniform(UInt32(numberDeadlyThings)))
             print("object type = ", objectType)
-            let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
-            
-            if(side==0){//left side
+            //let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
+            let deadlyThing = makeAnemone()
+            print("side = ", side)
+            if(side=="left"){//left side
                 let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
                 deadlyThing.runAction(spin)
-                let wall = characters[1]
+                let wall = walls[0]
                 deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
                 deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
             }
-            else if(side==1){
+            else if(side=="right"){
                 let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
                 deadlyThing.runAction(spin)
-                let wall = characters[2]
+                let wall = walls[1]
                 deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
                 deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
             }
             self.addChild(deadlyThing)
-            
+            print("deadlyThing = ", deadlyThing)
             let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
             let sleepTime = deathAppearanceInterval + sleepRadius
@@ -290,11 +296,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
         
-        for touch in touches {
-            let location = touch.locationInNode(self)
-            let fish = characters[0]
+        //for(var counter=0;counter<touches.count;counter++) {
+            var touch = touches.first
+            let location = touch!.locationInNode(self)
             let dist = location.y - fish.position.y
-            fish.physicsBody?!.velocity.dy = dist
+            fish.physicsBody?.velocity.dy = dist
             
             /*let sprite = SKSpriteNode(imageNamed:"Spaceship")
             
@@ -307,7 +313,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             sprite.runAction(SKAction.repeatActionForever(action))
             
             self.addChild(sprite)*/
-        }
+        //}
     }
    
     override func update(currentTime: CFTimeInterval) {
