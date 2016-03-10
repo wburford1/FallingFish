@@ -279,9 +279,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("deadlyThing = ", deadlyThing)
             let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
-            let sleepTime = deathAppearanceInterval + sleepRadius
+            let sleepTime = (deathAppearanceInterval + sleepRadius)*1000000
             if(sleepTime>0){
-                sleep(UInt32(sleepTime))
+                usleep(UInt32(sleepTime))
             }
         }
         endInfinitGame()
