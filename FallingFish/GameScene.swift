@@ -256,8 +256,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }*/
     
     func spawnRandomDeadlyThings(side: String){//not using this method anymore
-        let deathAppearanceInterval = 2.0
-        let deathAppearanceIntervalRadius = 1.0
+        let deathAppearanceInterval = 1.2
+        let deathAppearanceIntervalRadius = 0.8
         while(alive){
             //let side = Int(arc4random_uniform(2))
             let objectType = Int(arc4random_uniform(UInt32(numberDeadlyThings)))
@@ -349,7 +349,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
             (secondBody.categoryBitMask == PhysicsCategory.Death)) {
                 print("should die now")
-                //fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
+                fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
         }
             
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && ((secondBody.categoryBitMask == PhysicsCategory.TopWall) || (secondBody.categoryBitMask == PhysicsCategory.LowWall))){
