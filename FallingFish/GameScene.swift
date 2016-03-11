@@ -15,6 +15,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var infinitEndTime : NSDate = NSDate()
     lazy var fish : SKSpriteNode = SKSpriteNode()
     lazy var walls : NSMutableArray = NSMutableArray()
+    lazy var leftWall : SKSpriteNode = SKSpriteNode()
+    lazy var rightWall : SKSpriteNode = SKSpriteNode()
     let numberDeadlyThings : Int = 1
     
     struct PhysicsCategory {
@@ -23,7 +25,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         static let Fish   : UInt32 = 0b1        // 1
         static let Wall   : UInt32 = 0b10       // 2
         static let Death  : UInt32 = 0b11       // 3
-        static let BadWall : UInt32 = 0b111       // 4
+        static let LowWall : UInt32 = 0b100     // 4
+        static let TopWall : UInt32 = 0b101     // 5
     }
     
     override func didMoveToView(view: SKView) {
@@ -38,7 +41,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(myLabel)
         
         self.physicsWorld.contactDelegate = self;
-        self.physicsWorld.gravity = CGVector(dx: 0, dy: 0.05) //added to fix apparent slow down of deadlyThings
+        self.physicsWorld.gravity = CGVector(dx: 0, dy: 0) //added to fix apparent slow down of deadlyThings
         fishVelXComp = self.size.width/5
 
         let fish = SKSpriteNode(imageNamed: "JesusFish.png")
@@ -75,6 +78,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         leftWall.physicsBody?.friction = 0;
         leftWall.name = "left wall"
         leftWall.zPosition = -50
+        self.leftWall = leftWall
         self.addChild(leftWall)
         
         let rightWall = SKSpriteNode(imageNamed: "solidWall.png")
@@ -91,13 +95,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rightWall.physicsBody?.friction = 0;
         rightWall.name = "right wall"
         rightWall.zPosition = -50
+        self.rightWall = rightWall
         self.addChild(rightWall)
         
         let topWall = SKSpriteNode(imageNamed: "flatWall.png")
         topWall.size = CGSize(width: size.width*2, height: size.height/32-size.height/33)
         topWall.position = CGPoint(x:0, y: size.height)
         topWall.physicsBody = SKPhysicsBody(rectangleOfSize: topWall.size)
-        topWall.physicsBody?.categoryBitMask = PhysicsCategory.BadWall
+        topWall.physicsBody?.categoryBitMask = PhysicsCategory.TopWall
         topWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
         topWall.physicsBody?.collisionBitMask = PhysicsCategory.None
         topWall.physicsBody?.affectedByGravity = false
@@ -111,8 +116,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         lowWall.size = CGSize(width: size.width*2, height: size.height/32-size.height/33)
         lowWall.position = CGPoint(x:0, y: 0)
         lowWall.physicsBody = SKPhysicsBody(rectangleOfSize: lowWall.size)
-        lowWall.physicsBody?.categoryBitMask = PhysicsCategory.BadWall
-        lowWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
+        lowWall.physicsBody?.categoryBitMask = PhysicsCategory.LowWall
+        lowWall.physicsBody?.contactTestBitMask = PhysicsCategory.Fish | PhysicsCategory.Death
         lowWall.physicsBody?.collisionBitMask = PhysicsCategory.None
         lowWall.physicsBody?.affectedByGravity = false
         lowWall.physicsBody?.dynamic = false
@@ -134,7 +139,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
         anemone.physicsBody = SKPhysicsBody(rectangleOfSize: anemone.size)
         anemone.physicsBody?.categoryBitMask = PhysicsCategory.Death
-        anemone.physicsBody?.contactTestBitMask = PhysicsCategory.Fish
+        anemone.physicsBody?.contactTestBitMask = PhysicsCategory.Fish | PhysicsCategory.TopWall
         anemone.physicsBody?.collisionBitMask = PhysicsCategory.None
         anemone.physicsBody?.affectedByGravity = true
         anemone.physicsBody?.dynamic = true
@@ -150,11 +155,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func playInfinitGame(){
         alive = true;
         fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
-        //let deadlyThread = NSThread(target: self, selector: "spawnRandomDeadlyThings", object: nil)
-        //deadlyThread.start()
         let left = "left"
         let right = "right"
-        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: left)//-5764607523034234877
+        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: left)
         let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: right)
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
         deadlyLeftThread.start()
@@ -173,6 +176,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             timeCheck = NSDate()
             let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
             scoreboard.text = String(Int(timeSinceStart*100))
+            usleep(50000)
         }
         infinitEndTime = timeCheck
         
@@ -264,19 +268,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if(side=="left"){//left side
                 let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
                 deadlyThing.runAction(spin)
-                let wall = walls[0]
+                let wall = leftWall//walls[0]
                 deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
                 deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
             }
             else if(side=="right"){
                 let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
                 deadlyThing.runAction(spin)
-                let wall = walls[1]
+                let wall = rightWall//walls[1]
                 deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
                 deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
             }
-            self.addChild(deadlyThing)
             print("deadlyThing = ", deadlyThing)
+            dispatch_async(dispatch_get_main_queue(), { () in
+                self.addChild(deadlyThing)
+            })
             let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
             let sleepTime = (deathAppearanceInterval + sleepRadius)*1000000
@@ -342,11 +348,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
             (secondBody.categoryBitMask == PhysicsCategory.Death)) {
                 print("should die now")
-                fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
+                //fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
         }
             
-        else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && (secondBody.categoryBitMask == PhysicsCategory.BadWall)){
+        else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && ((secondBody.categoryBitMask == PhysicsCategory.TopWall) || (secondBody.categoryBitMask == PhysicsCategory.LowWall))){
             fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
+        }
+        
+        else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.TopWall)){
+            print("death hit top wall")
         }
             
         else{
