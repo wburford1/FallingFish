@@ -8,6 +8,7 @@
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    let button = UIButton()
     lazy var fishVelXComp : CGFloat = -100000
     lazy var alive : Bool = false
     lazy var deadlyScaler : CGFloat = 1
@@ -131,9 +132,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         walls.addObject(topWall)
         walls.addObject(lowWall)
         
-        playInfinitGame()
+        
+//        let button = UIButton();
+        button.setTitle("Play", forState: .Normal)
+        button.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        button.frame = CGRectMake((self.view?.frame.size.width)!/2, (self.view?.frame.size.height)!/2, 100, 50)
+//        button.frame = CGRectMake(15, -50, 300, 500)
+
+        button.addTarget(self, action: "onPlay:", forControlEvents: .TouchUpInside)
+
+        self.view?.addSubview(button)
+        
+        
+        alive = true;
+        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
+//        playInfinitGame()
     }
     
+    
+    func onPlay(sender:UIButton){
+        playInfinitGame()
+        button.removeFromSuperview()
+
+    }
     func makeAnemone() -> SKSpriteNode{
         let anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
         anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
@@ -153,8 +174,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func playInfinitGame(){
-        alive = true;
-        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
+//        alive = true;
+//        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
         let left = "left"
         let right = "right"
         let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: left)
