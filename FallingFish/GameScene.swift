@@ -6,6 +6,13 @@
 //  Copyright (c) 2016 Will Burford. All rights reserved.
 //
 import SpriteKit
+import RealmSwift
+
+class HighScore : Object{
+    dynamic var score = Int()
+    dynamic var name = ""
+    dynamic var date = NSDate()
+}
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     let button = UIButton()
@@ -200,14 +207,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             usleep(100000)
         }
         infinitEndTime = timeCheck
-        
+        endInfinitGame()
     }
     
     func endInfinitGame(){
+        let realm = try! Realm()
         let timeSinceStart: Double =  infinitEndTime.timeIntervalSinceDate(infinitStartTime)
         let scoreLabel = SKLabelNode(fontNamed: "Gothic")
         let score = Int(timeSinceStart*10)
         scoreLabel.text = "Score: " + String(score)
+        var predicate = "score > "
+        predicate += String(score)
+        print(predicate)
+        let previousHighScore = realm.objects(HighScore).filter(predicate)
+        let highScoreLabel = SKLabelNode(fontNamed: "Gothic")
+        highScoreLabel.position = CGPoint(x: size.width/2, y: size.height/6)
+        /*try! realm.write{
+            realm.deleteAll()
+        }*/
+        if(previousHighScore.count<1){
+            let newHighScore = HighScore()
+            newHighScore.score = score
+            newHighScore.name = "King Arthur"
+            newHighScore.date = NSDate()
+            let allHS = realm.objects(HighScore)
+            try! realm.write {
+                realm.delete(allHS)
+                realm.add(newHighScore)
+            }
+            highScoreLabel.text = "New High Score!"
+        }
+        else{
+            var hsString = "High Score: "
+            hsString += String(previousHighScore.first!.score)
+            highScoreLabel.text = hsString
+        }
+        self.addChild(highScoreLabel)
         scoreLabel.position = CGPoint(x: size.width/2, y: size.height/5)
         self.addChild(scoreLabel)
         
@@ -312,7 +347,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 usleep(UInt32(sleepTime))
             }
         }
-        endInfinitGame()
     }
     
     func copySpriteNode(sprite: SKSpriteNode)-> SKSpriteNode{
@@ -408,7 +442,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             fish.physicsBody?.velocity.dx = idkWhyThisDontWork
             fish.texture = SKTexture(imageNamed: "JesusFish_Flipped.png")
         }
-        //fish.removeFromParent()
-        
     }
 }
