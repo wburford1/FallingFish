@@ -175,8 +175,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         while(alive){
             timeCheck = NSDate()
             let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
-            scoreboard.text = String(Int(timeSinceStart*100))
-            usleep(50000)
+            scoreboard.text = String(Int(timeSinceStart*10))
+            usleep(100000)
         }
         infinitEndTime = timeCheck
         
@@ -185,7 +185,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func endInfinitGame(){
         let timeSinceStart: Double =  infinitEndTime.timeIntervalSinceDate(infinitStartTime)
         let scoreLabel = SKLabelNode(fontNamed: "Gothic")
-        let score = Int(timeSinceStart*100)
+        let score = Int(timeSinceStart*10)
         scoreLabel.text = "Score: " + String(score)
         scoreLabel.position = CGPoint(x: size.width/2, y: size.height/5)
         self.addChild(scoreLabel)
@@ -283,7 +283,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             dispatch_async(dispatch_get_main_queue(), { () in
                 self.addChild(deadlyThing)
             })
-            let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
+            //let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
+            let sleepRadius = Double(arc4random())/Double(UInt32.max)*(deathAppearanceIntervalRadius * 2) - deathAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
             let sleepTime = (deathAppearanceInterval + sleepRadius)*1000000
             if(sleepTime>0){
