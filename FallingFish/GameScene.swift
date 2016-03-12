@@ -137,12 +137,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         alive = true;
-        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
 //        playInfinitGame()
     }
     
     
     func onPlay(sender:UIButton){
+        alive = true;
         playInfinitGame()
         button.removeFromSuperview()
 
@@ -181,6 +181,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         fish.physicsBody?.usesPreciseCollisionDetection = true;
         fish.physicsBody?.linearDamping = 0;
         fish.physicsBody?.angularDamping = 0;
+        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
+
         return fish
     }
     
@@ -211,7 +213,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             usleep(100000)
         }
         infinitEndTime = timeCheck
-        endInfinitGame()
     }
     
     func endInfinitGame(){
@@ -247,7 +248,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         let youDied = SKLabelNode(fontNamed: "Gothic")
         youDied.text = "YOU DIED"
-        youDied.position = CGPoint(x: size.width/2, y: size.height/4)
+        youDied.position = CGPoint(x: size.width/2, y: 3*size.height/4)
         self.addChild(youDied)
         
         scoreLabel.position = CGPoint(x: size.width/2, y: youDied.position.y - youDied.frame.height-5)
@@ -256,6 +257,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         highScoreLabel.position = CGPoint(x: size.width/2, y: scoreLabel.position.y - scoreLabel.frame.height-5)
         self.addChild(highScoreLabel)
         print("finished endInfinitGame method")
+        
+        let retry = UIButton()
+        retry.setTitle("Retry", forState: .Normal)
+        retry.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        //retry.frame = CGRectMake(size.width/2, highScoreLabel.position.y - highScoreLabel.frame.height-5, 100, 50)
+        retry.frame = CGRectMake((self.view?.frame.size.width)!/2, (self.view?.frame.size.height)!/2, 100, 50)
+        retry.addTarget(self, action: "onRetry:", forControlEvents: .TouchUpInside)
+        self.view?.addSubview(retry)
+    }
+    
+    func onRetry(sender:UIButton){
+        self.addChild(makeFish())
+        onPlay(sender)
     }
     
     /*func spawnRandomDeadlyThingsLeft(){
@@ -433,6 +447,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("well at least it called the death method")
         fish.removeFromParent()
         alive = false;
+        endInfinitGame()
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
