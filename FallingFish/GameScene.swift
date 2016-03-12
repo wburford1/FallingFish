@@ -52,22 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.gravity = CGVector(dx: 0, dy: 0) //added to fix apparent slow down of deadlyThings
         fishVelXComp = self.size.width/5
 
-        let fish = SKSpriteNode(imageNamed: "JesusFish.png")
-        let fishWidth = size.width/15
-        fish.size = CGSize(width: fishWidth, height: (fishWidth)/(500/139))
-        fish.position = CGPoint(x: size.width/2, y: size.height*3/4)
-        fish.physicsBody = SKPhysicsBody(rectangleOfSize: fish.size)
-        fish.physicsBody?.dynamic = true
-        fish.physicsBody?.collisionBitMask = PhysicsCategory.None
-        fish.physicsBody?.categoryBitMask = PhysicsCategory.Fish
-        fish.physicsBody?.contactTestBitMask = PhysicsCategory.Wall | PhysicsCategory.Death
-        fish.physicsBody?.restitution = 1.0
-        fish.physicsBody?.friction = 0;
-        fish.physicsBody?.affectedByGravity = false
-        fish.physicsBody?.usesPreciseCollisionDetection = true;
-        fish.physicsBody?.linearDamping = 0;
-        fish.physicsBody?.angularDamping = 0;
-        self.fish = fish;
+        fish = makeFish()
         self.addChild(fish)
         
         //wall placement does not work correctly on iPads and iPhone 4s
@@ -180,6 +165,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return anemone
     }
     
+    func makeFish() -> SKSpriteNode{
+        let fish = SKSpriteNode(imageNamed: "JesusFish.png")
+        let fishWidth = size.width/15
+        fish.size = CGSize(width: fishWidth, height: (fishWidth)/(500/139))
+        fish.position = CGPoint(x: size.width/2, y: size.height*3/4)
+        fish.physicsBody = SKPhysicsBody(rectangleOfSize: fish.size)
+        fish.physicsBody?.dynamic = true
+        fish.physicsBody?.collisionBitMask = PhysicsCategory.None
+        fish.physicsBody?.categoryBitMask = PhysicsCategory.Fish
+        fish.physicsBody?.contactTestBitMask = PhysicsCategory.Wall | PhysicsCategory.Death
+        fish.physicsBody?.restitution = 1.0
+        fish.physicsBody?.friction = 0;
+        fish.physicsBody?.affectedByGravity = false
+        fish.physicsBody?.usesPreciseCollisionDetection = true;
+        fish.physicsBody?.linearDamping = 0;
+        fish.physicsBody?.angularDamping = 0;
+        return fish
+    }
+    
     func playInfinitGame(){
 //        alive = true;
 //        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
@@ -221,7 +225,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print(predicate)
         let previousHighScore = realm.objects(HighScore).filter(predicate)
         let highScoreLabel = SKLabelNode(fontNamed: "Gothic")
-        highScoreLabel.position = CGPoint(x: size.width/2, y: size.height/6)
         /*try! realm.write{
             realm.deleteAll()
         }*/
@@ -242,15 +245,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             hsString += String(previousHighScore.first!.score)
             highScoreLabel.text = hsString
         }
-        self.addChild(highScoreLabel)
-        scoreLabel.position = CGPoint(x: size.width/2, y: size.height/5)
-        self.addChild(scoreLabel)
-        
         let youDied = SKLabelNode(fontNamed: "Gothic")
         youDied.text = "YOU DIED"
         youDied.position = CGPoint(x: size.width/2, y: size.height/4)
         self.addChild(youDied)
         
+        scoreLabel.position = CGPoint(x: size.width/2, y: youDied.position.y - youDied.frame.height-5)
+        self.addChild(scoreLabel)
+        
+        highScoreLabel.position = CGPoint(x: size.width/2, y: scoreLabel.position.y - scoreLabel.frame.height-5)
+        self.addChild(highScoreLabel)
+        print("finished endInfinitGame method")
     }
     
     /*func spawnRandomDeadlyThingsLeft(){
