@@ -26,6 +26,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var leftWall : SKSpriteNode = SKSpriteNode()
     lazy var rightWall : SKSpriteNode = SKSpriteNode()
     let numberDeadlyThings : Int = 1
+    let deathScreenItems = NSMutableArray()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -246,17 +247,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             hsString += String(previousHighScore.first!.score)
             highScoreLabel.text = hsString
         }
+        /*deathView.frame = (self.view?.frame)!
+        deathView.backgroundColor = UIColor.clearColor()*/
+        
         let youDied = SKLabelNode(fontNamed: "Gothic")
         youDied.text = "YOU DIED"
         youDied.position = CGPoint(x: size.width/2, y: 3*size.height/4)
         self.addChild(youDied)
+        deathScreenItems.addObject(youDied)
+        
+        /*let youDied = UILabel(frame: CGRectMake(deathView.frame.width/2, deathView.frame.height/4, deathView.frame.width, 100))
+        youDied.text = "YOU DIED"
+        deathView.addSubview(youDied)*/
+        
         
         scoreLabel.position = CGPoint(x: size.width/2, y: youDied.position.y - youDied.frame.height-5)
         self.addChild(scoreLabel)
+        deathScreenItems.addObject(scoreLabel)
         
         highScoreLabel.position = CGPoint(x: size.width/2, y: scoreLabel.position.y - scoreLabel.frame.height-5)
         self.addChild(highScoreLabel)
-        print("finished endInfinitGame method")
+        deathScreenItems.addObject(highScoreLabel)
         
         let retry = UIButton()
         retry.setTitle("Retry", forState: .Normal)
@@ -264,71 +275,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //retry.frame = CGRectMake(size.width/2, highScoreLabel.position.y - highScoreLabel.frame.height-5, 100, 50)
         retry.frame = CGRectMake((self.view?.frame.size.width)!/2, (self.view?.frame.size.height)!/2, 100, 50)
         retry.addTarget(self, action: "onRetry:", forControlEvents: .TouchUpInside)
+        deathScreenItems.addObject(retry)
         self.view?.addSubview(retry)
     }
     
     func onRetry(sender:UIButton){
         self.addChild(makeFish())
+        for(var counter=0;counter<deathScreenItems.count;counter++){
+            print("counter = ", counter)
+            if let item = deathScreenItems[counter] as? SKLabelNode {
+                print("this is a sprite node ", item)
+            }
+            else if let item = deathScreenItems[counter] as? UIButton {
+                print("this is a button", item)
+            }
+        }
         onPlay(sender)
     }
-    
-    /*func spawnRandomDeadlyThingsLeft(){
-        let veryDeadlyThings = NSMutableArray()
-        for(var counter = 3;counter<characters.count; counter++){
-            veryDeadlyThings[counter-3] = characters[counter]
-        }
-        let deathAppearanceInterval = 2.0
-        let deathAppearanceIntervalRadius = 1.0
-        while(alive){
-            let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
-            print("object type = ", objectType)
-            let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
-            
-            let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
-            deadlyThing.runAction(spin)
-            let wall = characters[1]
-            deadlyThing.position = CGPoint(x: wall.position.x+wall.size.width-deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
-            deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
-            
-            self.addChild(deadlyThing)
-            
-            let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
-            print("sleep plus minus = ", sleepRadius)
-            let sleepTime = deathAppearanceInterval + sleepRadius
-            if(sleepTime>0){
-                sleep(UInt32(sleepTime))
-            }
-        }
-        endInfinitGame()
-    }
-    
-    func spawnRandomDeadlyThingsRight(){
-        let veryDeadlyThings = NSMutableArray()
-        for(var counter = 3;counter<characters.count; counter++){
-            veryDeadlyThings[counter-3] = characters[counter]
-        }
-        let deathAppearanceInterval = 2.0
-        let deathAppearanceIntervalRadius = 1.0
-        while(alive){
-            let objectType = Int(arc4random_uniform(UInt32(veryDeadlyThings.count)))
-            print("object type = ", objectType)
-            let deadlyThing = makeAnemone();
-            let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
-            deadlyThing.runAction(spin)
-            let wall = characters[2]
-            deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
-            deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
-            print(deadlyThing)
-            self.addChild(deadlyThing)
-            
-            let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
-            print("sleep plus minus = ", sleepRadius)
-            let sleepTime = (deathAppearanceInterval + sleepRadius)*100000000
-            if(sleepTime>0){
-                usleep(UInt32(sleepTime))
-            }
-        }
-    }*/
     
     func spawnRandomDeadlyThings(side: String){//not using this method anymore
         let deathAppearanceInterval = 1.2
@@ -378,7 +341,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
        /* Called when a touch begins */
         
         //for(var counter=0;counter<touches.count;counter++) {
-            var touch = touches.first
+            let touch = touches.first
             let location = touch!.locationInNode(self)
             let dist = location.y - fish.position.y
             fish.physicsBody?.velocity.dy = dist
