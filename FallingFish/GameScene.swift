@@ -214,6 +214,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             usleep(100000)
         }
         infinitEndTime = timeCheck
+        scoreboard.removeFromParent()
     }
     
     func endInfinitGame(){
@@ -226,6 +227,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         predicate += String(score)
         print(predicate)
         let previousHighScore = realm.objects(HighScore).filter(predicate)
+        //print("previous HS = ",previousHighScore)
         let highScoreLabel = SKLabelNode(fontNamed: "Gothic")
         /*try! realm.write{
             realm.deleteAll()
@@ -236,10 +238,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             newHighScore.name = "King Arthur"
             newHighScore.date = NSDate()
             let allHS = realm.objects(HighScore)
+            //print("all HS1 = ", allHS)
             try! realm.write {
                 realm.delete(allHS)
                 realm.add(newHighScore)
             }
+            //print("all HS2 = ",allHS)
             highScoreLabel.text = "New High Score!"
         }
         else{
@@ -285,9 +289,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("counter = ", counter)
             if let item = deathScreenItems[counter] as? SKLabelNode {
                 print("this is a sprite node ", item)
+                item.removeFromParent()
             }
             else if let item = deathScreenItems[counter] as? UIButton {
                 print("this is a button", item)
+                item.removeFromSuperview()
             }
         }
         onPlay(sender)
