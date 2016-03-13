@@ -137,15 +137,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view?.addSubview(button)
         
         
-        alive = true;
 //        playInfinitGame()
     }
     
     
     func onPlay(sender:UIButton){
-        alive = true;
+//        alive = true;
         playInfinitGame()
-        button.removeFromSuperview()
+        sender.removeFromSuperview()
 
     }
     func makeAnemone() -> SKSpriteNode{
@@ -188,7 +187,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func playInfinitGame(){
-//        alive = true;
+        alive = true;
 //        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
         let left = "left"
         let right = "right"
@@ -197,8 +196,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
         deadlyLeftThread.start()
         deadlyRightThread.start()
-        scoreTracker.start()
         infinitStartTime = NSDate()
+        scoreTracker.start()
     }
     
     func trackScore(){
@@ -219,6 +218,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func endInfinitGame(){
         let realm = try! Realm()
+        print("infintStartTime = ",infinitStartTime)
+        print("infinitEndTime = ",infinitEndTime)
         let timeSinceStart: Double =  infinitEndTime.timeIntervalSinceDate(infinitStartTime)
         let scoreLabel = SKLabelNode(fontNamed: "Gothic")
         let score = Int(timeSinceStart*10)
@@ -347,11 +348,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
        /* Called when a touch begins */
         
         //for(var counter=0;counter<touches.count;counter++) {
+        //if alive{
             let touch = touches.first
             let location = touch!.locationInNode(self)
             let dist = location.y - fish.position.y
             fish.physicsBody?.velocity.dy = dist
-            
+       // }
+        
             /*let sprite = SKSpriteNode(imageNamed:"Spaceship")
             
             sprite.xScale = 0.5
