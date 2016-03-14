@@ -27,6 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var rightWall : SKSpriteNode = SKSpriteNode()
     let numberDeadlyThings : Int = 1
     let deathScreenItems = NSMutableArray()
+    lazy var startLabel : SKLabelNode = SKLabelNode()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -41,13 +42,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "CLASSIC NOONS"
+        let myLabel = SKLabelNode(fontNamed:"Zapfino")
+        myLabel.text = "Falling Fish"
         myLabel.fontSize = 45
         myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
         myLabel.zPosition = -100
-        
-        self.addChild(myLabel)
+        startLabel = myLabel
+        startLabel.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: size.width/2, height: size.height/2))
+        startLabel.physicsBody?.collisionBitMask = PhysicsCategory.None
+        self.addChild(startLabel)
         
         self.physicsWorld.contactDelegate = self;
         self.physicsWorld.gravity = CGVector(dx: 0, dy: 0) //added to fix apparent slow down of deadlyThings
@@ -133,6 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        button.frame = CGRectMake(15, -50, 300, 500)
 
         button.addTarget(self, action: "onPlay:", forControlEvents: .TouchUpInside)
+        
 
         self.view?.addSubview(button)
         
@@ -143,6 +147,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func onPlay(sender:UIButton){
 //        alive = true;
+        if sender.titleLabel?.text == "Play"{
+            startLabel.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5)
+        }
         playInfinitGame()
         sender.removeFromSuperview()
 
@@ -214,6 +221,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         infinitEndTime = timeCheck
         scoreboard.removeFromParent()
+        dispatch_async(dispatch_get_main_queue(), { () in
+            self.endInfinitGame()
+        })
     }
     
     func endInfinitGame(){
@@ -285,7 +295,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func onRetry(sender:UIButton){
-        self.addChild(makeFish())
+        fish = makeFish()
+        self.addChild(fish)
         for(var counter=0;counter<deathScreenItems.count;counter++){
             print("counter = ", counter)
             if let item = deathScreenItems[counter] as? SKLabelNode {
@@ -419,7 +430,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("well at least it called the death method")
         fish.removeFromParent()
         alive = false;
-        endInfinitGame()
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
