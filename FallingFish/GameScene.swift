@@ -195,6 +195,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func playInfinitGame(){
         alive = true;
+        deadlyScaler = 1;
 //        fish.physicsBody?.velocity = (CGVector(dx: (-1)*fishVelXComp, dy: 0))
         let left = "left"
         let right = "right"
@@ -217,6 +218,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             timeCheck = NSDate()
             let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
             scoreboard.text = String(Int(timeSinceStart*10))
+            if(timeSinceStart>2)&&(Int(timeSinceStart*10%10)==0)&&(deadlyScaler<2.0){
+                deadlyScaler+=0.05
+            }
+            
             usleep(100000)
         }
         infinitEndTime = timeCheck
@@ -312,9 +317,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnRandomDeadlyThings(side: String){//not using this method anymore
-        let deathAppearanceInterval = 1.2
-        let deathAppearanceIntervalRadius = 0.8
+        var deathAppearanceInterval = 1.2
+        var deathAppearanceIntervalRadius = 0.8
         while(alive){
+            deathAppearanceInterval /= (Double(deadlyScaler))
+            //deathAppearanceIntervalRadius /= (Double(deadlyScaler))
             //let side = Int(arc4random_uniform(2))
             let objectType = Int(arc4random_uniform(UInt32(numberDeadlyThings)))
             print("object type = ", objectType)
