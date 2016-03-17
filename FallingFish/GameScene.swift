@@ -374,7 +374,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let possibleX = Int(arc4random_uniform(750))
             bubble.position = CGPoint(x: possibleX, y: 0)
 //            let var yVelocity = size.hesight/5
-            bubble.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * 5)
+            bubble.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * 4)
             
             
             dispatch_async(dispatch_get_main_queue(), { () in

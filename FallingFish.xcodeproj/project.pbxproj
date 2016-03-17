@@ -253,6 +253,7 @@
 				TargetAttributes = {
 					82E616951C8785F1005893B1 = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = 4MEVZCD4E9;
 					};
 					82E616AD1C8785F2005893B1 = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -519,6 +520,7 @@
 			baseConfigurationReference = 12FB832C79E1A2D6DE65B331 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FallingFish/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.wburford.FallingFish;
@@ -531,6 +533,7 @@
 			baseConfigurationReference = DDC90A724F4E41DAF5569212 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = FallingFish/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.wburford.FallingFish;
