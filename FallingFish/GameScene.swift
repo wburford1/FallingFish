@@ -365,7 +365,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var bubbleAppearanceInterval = 2
         let bubbleAppearanceIntervalRadius = 1.6
         var bubbleInterval = 1.0
-//        let bubblyScaler  = Int(arc4random_uniform(3))
+        let bubblyScaler  = Int(arc4random_uniform(3)) + 1
         while(true){
             bubbleInterval /= (Double(bubblyScaler))
             let bubble = makeBubble()
@@ -374,7 +374,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let possibleX = Int(arc4random_uniform(750))
             bubble.position = CGPoint(x: possibleX, y: 0)
 //            let var yVelocity = size.hesight/5
-            bubble.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * 4)
+            bubble.physicsBody?.velocity = CGVector(dx: 0, dy: Int(size.height/5.0) * bubblyScaler)
             
             
             dispatch_async(dispatch_get_main_queue(), { () in
@@ -383,7 +383,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             let sleepRadius = Double(arc4random())/Double(UInt32.max)*(bubbleAppearanceIntervalRadius * 2) - bubbleAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
-            let sleepTime = (bubbleInterval + sleepRadius)*1000000
+            let sleepTime = (bubbleInterval + sleepRadius)*10000000
             if(sleepTime>0){
                 usleep(UInt32(sleepTime))
             
