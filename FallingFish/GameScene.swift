@@ -234,12 +234,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: left)
         let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: right)
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
-//        let middleThread = NSThread(target: self, selector: "spawnBubbles", object: nil)
+        let middleThread = NSThread(target: self, selector: "spawnBubbles", object: nil)
         deadlyLeftThread.start()
         deadlyRightThread.start()
         infinitStartTime = NSDate()
         scoreTracker.start()
-//        middleThread.start()
+        middleThread.start()
     }
     
     
@@ -360,38 +360,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         onPlay(sender)
     }
     
-    /*
+    
     func spawnBubbles(){
-//        var deathAppearanceIntervalRadius = 0.8
-
+        var bubbleAppearanceInterval = 2
+        var bubbleAppearanceIntervalRadius = 1.6
         var bubbleInterval = 1.0
 //        let bubblyScaler  = Int(arc4random_uniform(3))
         while(true){
             bubbleInterval /= (Double(bubblyScaler))
             let bubble = makeBubble()
-            let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
-            bubble.runAction(spin)
-            let possibleX = Int(arc4random_uniform(200)) + 200
+//            let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
+//            bubble.runAction(spin)
+            let possibleX = Int(arc4random_uniform(500))
             bubble.position = CGPoint(x: possibleX, y: 0)
 //            let var yVelocity = size.hesight/5
-            bubble.physicsBody?.velocity = CGVector(dx: 0, dy: Int(size.height/5 * 2))
+            bubble.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * 5)
             
             
             dispatch_async(dispatch_get_main_queue(), { () in
                 self.addChild(bubble)
             })
-            /*
-            let sleepRadius = Double(arc4random())/Double(UInt32.max)*(deathAppearanceIntervalRadius * 2) - deathAppearanceIntervalRadius
+            
+            let sleepRadius = Double(arc4random())/Double(UInt32.max)*(bubbleAppearanceIntervalRadius * 2) - bubbleAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
             let sleepTime = (bubbleInterval + sleepRadius)*1000000
             if(sleepTime>0){
                 usleep(UInt32(sleepTime))
             
             }
-            */
+            else{
+                
+                usleep(250000)
+            }
+
+            
         }
     }
-*/
+
     
 
     
