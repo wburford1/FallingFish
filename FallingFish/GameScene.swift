@@ -241,14 +241,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreboard.text = "0000"
         self.addChild(scoreboard)
         var timeCheck = NSDate()
+        
         while(alive){
             timeCheck = NSDate()
             let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
             scoreboard.text = String(Int(timeSinceStart*10))
             if(timeSinceStart>2)&&(Int(timeSinceStart*10%10)==0)&&(deadlyScaler<2.0){
-                deadlyScaler+=0.05
+                deadlyScaler+=0.01
             }
-            
+            //print("startLabel.parent = ",startLabel.parent != nil)
+            print("testing stuff = ",(Int(timeSinceStart)>=5) && (Int(timeSinceStart)<=6))
+            //print("testing less = ", (Int(timeSinceStart)>5))
+            //print("testing more = ", (Int(timeSinceStart)<6))
+            if (Int(timeSinceStart)>=5) && (Int(timeSinceStart)<=6) && (startLabel.parent != nil){
+                startLabel.removeFromParent()
+                print("removed start label")
+            }
             usleep(100000)
         }
         infinitEndTime = timeCheck
