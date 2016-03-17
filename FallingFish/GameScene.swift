@@ -30,6 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let numberDeadlyThings : Int = 1
     let deathScreenItems = NSMutableArray()
     lazy var startLabel : SKLabelNode = SKLabelNode()
+    let extraAnemones = NSMutableArray()
     
     struct PhysicsCategory {
         static let None      : UInt32 = 0
@@ -39,8 +40,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         static let Death  : UInt32 = 0b11       // 3
         static let LowWall : UInt32 = 0b100     // 4
         static let TopWall : UInt32 = 0b101     // 5
-        static let Bubbles : UInt32 = 0b111     // 6
-        static let Coins : UInt32 = 0b110       // 7
+        static let Bubbles : UInt32 = 0b111     // 7
+        static let Coins : UInt32 = 0b110       // 6
     }
     
     override func didMoveToView(view: SKView) {
@@ -159,7 +160,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     }
     func makeAnemone() -> SKSpriteNode{
-        let anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
+        var anemone : SKSpriteNode
+        if extraAnemones.count>0 {
+            print("recycling anemone")
+            let returning = extraAnemones.lastObject as! SKSpriteNode
+            extraAnemones.removeLastObject()
+            return returning
+            
+        }
+        anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
         anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
         anemone.physicsBody = SKPhysicsBody(rectangleOfSize: anemone.size)
         anemone.physicsBody?.categoryBitMask = PhysicsCategory.Death
@@ -253,7 +262,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print("testing stuff = ",(Int(timeSinceStart)>=5) && (Int(timeSinceStart)<=6))
             //print("testing less = ", (Int(timeSinceStart)>5))
             //print("testing more = ", (Int(timeSinceStart)<6))
-            if (Int(timeSinceStart)>=5) && (Int(timeSinceStart)<=6) && (startLabel.parent != nil){
+            if (Int(timeSinceStart)>=6) && (Int(timeSinceStart)<=7) && (startLabel.parent != nil){
                 startLabel.removeFromParent()
                 print("removed start label")
             }
@@ -420,8 +429,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let sleepRadius = Double(arc4random())/Double(UInt32.max)*(deathAppearanceIntervalRadius * 2) - deathAppearanceIntervalRadius
             print("sleep plus minus = ", sleepRadius)
             let sleepTime = (deathAppearanceInterval + sleepRadius)*1000000
-            if(sleepTime>0){
+            if(sleepTime>0.25){
                 usleep(UInt32(sleepTime))
+            }
+            else{
+                usleep(250000)
             }
         }
     }
@@ -436,12 +448,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
        /* Called when a touch begins */
         
         //for(var counter=0;counter<touches.count;counter++) {
-        //if alive{
+        if alive{
             let touch = touches.first
             let location = touch!.locationInNode(self)
             let dist = location.y - fish.position.y
             fish.physicsBody?.velocity.dy = dist
-       // }
+        }
         
             /*let sprite = SKSpriteNode(imageNamed:"Spaceship")
             
@@ -475,9 +487,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if ((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
             (secondBody.categoryBitMask == PhysicsCategory.Wall)) {
-                print("supossed wall = ", secondBody.node)
-                print("category = ", secondBody.categoryBitMask)
-                print("wall = ", PhysicsCategory.Wall, "death = ",PhysicsCategory.Death)
                 fishDidCollideWithWall(firstBody.node as! SKSpriteNode, wall: secondBody.node as! SKSpriteNode)
         }
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
@@ -492,9 +501,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.TopWall)){
             print("death hit top wall")
+            if firstBody.node?.name == "anemone"{
+                let anemone = firstBody.node!
+                anemone.removeFromParent()
+                extraAnemones.addObject(anemone)
+            }
         }
-            
+        
+        else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.Wall)){
+            //do nothing
+        }
         else{
+            print("UNRECOGNIZED CONTACT")
             print("first = ", firstBody.categoryBitMask, ", second = ", secondBody.categoryBitMask)
             print("fish = ",PhysicsCategory.Fish)
             print(firstBody)
@@ -506,6 +524,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func fishDidCollideWithDeath(fish: SKSpriteNode, death: SKSpriteNode){
         print("well at least it called the death method")
         fish.removeFromParent()
+        print("removed fish")
         alive = false;
     }
     
