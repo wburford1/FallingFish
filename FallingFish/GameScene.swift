@@ -363,7 +363,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func spawnBubbles(){
         var bubbleAppearanceInterval = 2
-        var bubbleAppearanceIntervalRadius = 1.6
+        let bubbleAppearanceIntervalRadius = 1.6
         var bubbleInterval = 1.0
 //        let bubblyScaler  = Int(arc4random_uniform(3))
         while(true){
@@ -371,7 +371,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let bubble = makeBubble()
 //            let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
 //            bubble.runAction(spin)
-            let possibleX = Int(arc4random_uniform(500))
+            let possibleX = Int(arc4random_uniform(750))
             bubble.position = CGPoint(x: possibleX, y: 0)
 //            let var yVelocity = size.hesight/5
             bubble.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * 5)
