@@ -162,7 +162,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func makeAnemone() -> SKSpriteNode{
         var anemone : SKSpriteNode
         if extraAnemones.count>0 {
-            print("recycling anemone")
             let returning = extraAnemones.lastObject as! SKSpriteNode
             extraAnemones.removeLastObject()
             return returning
@@ -198,7 +197,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bubble.physicsBody?.friction = 0;
         bubble.physicsBody?.linearDamping = 0;
         bubble.name = "bubble"
-        print("made bubble = ", bubble)
         
         return bubble
     }
@@ -258,13 +256,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if(timeSinceStart>2)&&(Int(timeSinceStart*10%10)==0)&&(deadlyScaler<2.0){
                 deadlyScaler+=0.01
             }
-            //print("startLabel.parent = ",startLabel.parent != nil)
-            print("testing stuff = ",(Int(timeSinceStart)>=5) && (Int(timeSinceStart)<=6))
-            //print("testing less = ", (Int(timeSinceStart)>5))
-            //print("testing more = ", (Int(timeSinceStart)<6))
             if (Int(timeSinceStart)>=6) && (Int(timeSinceStart)<=7) && (startLabel.parent != nil){
                 startLabel.removeFromParent()
-                print("removed start label")
             }
             usleep(100000)
         }
@@ -277,17 +270,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func endInfinitGame(){
         let realm = try! Realm()
-        print("infintStartTime = ",infinitStartTime)
-        print("infinitEndTime = ",infinitEndTime)
+        //print("infintStartTime = ",infinitStartTime)
+        //print("infinitEndTime = ",infinitEndTime)
         let timeSinceStart: Double =  infinitEndTime.timeIntervalSinceDate(infinitStartTime)
         let scoreLabel = SKLabelNode(fontNamed: "Gothic")
         let score = Int(timeSinceStart*10)
         scoreLabel.text = "Score: " + String(score)
         var predicate = "score > "
         predicate += String(score)
-        print(predicate)
         let previousHighScore = realm.objects(HighScore).filter(predicate)
-        //print("previous HS = ",previousHighScore)
         let highScoreLabel = SKLabelNode(fontNamed: "Gothic")
         /*try! realm.write{
             realm.deleteAll()
@@ -298,12 +289,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             newHighScore.name = "King Arthur"
             newHighScore.date = NSDate()
             let allHS = realm.objects(HighScore)
-            //print("all HS1 = ", allHS)
             try! realm.write {
                 realm.delete(allHS)
                 realm.add(newHighScore)
             }
-            //print("all HS2 = ",allHS)
             highScoreLabel.text = "New High Score!"
         }
         else{
@@ -347,13 +336,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         fish = makeFish()
         self.addChild(fish)
         for(var counter=0;counter<deathScreenItems.count;counter++){
-            print("counter = ", counter)
             if let item = deathScreenItems[counter] as? SKLabelNode {
-                print("this is a sprite node ", item)
                 item.removeFromParent()
             }
             else if let item = deathScreenItems[counter] as? UIButton {
-                print("this is a button", item)
                 item.removeFromSuperview()
             }
         }
@@ -382,7 +368,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             })
             
             let sleepRadius = Double(arc4random())/Double(UInt32.max)*(bubbleAppearanceIntervalRadius * 2) - bubbleAppearanceIntervalRadius
-            print("sleep plus minus = ", sleepRadius)
+            //print("bubble sleep plus minus = ", sleepRadius)
             let sleepTime = (bubbleInterval + sleepRadius)*10000000
             if(sleepTime>0){
                 usleep(UInt32(sleepTime))
@@ -404,14 +390,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var deathAppearanceInterval = 1.2
         var deathAppearanceIntervalRadius = 0.8
         while(alive){
-            deathAppearanceInterval /= (Double(deadlyScaler))
+            deathAppearanceInterval /= (Double(sqrt(deadlyScaler)))
             //deathAppearanceIntervalRadius /= (Double(deadlyScaler))
             //let side = Int(arc4random_uniform(2))
             let objectType = Int(arc4random_uniform(UInt32(numberDeadlyThings)))
-            print("object type = ", objectType)
             //let deadlyThing = copySpriteNode(veryDeadlyThings[objectType] as! SKSpriteNode)
             let deadlyThing = makeAnemone()
-            print("side = ", side)
             if(side=="left"){//left side
                 let spin = SKAction.rotateToAngle(CGFloat(3*M_PI/2.0), duration: 0)
                 deadlyThing.runAction(spin)
@@ -426,14 +410,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 deadlyThing.position = CGPoint(x: wall.position.x-wall.size.width+deadlyThing.size.width, y: 0) //this is a total hack of a position bc still don't get how sizing and stuff works
                 deadlyThing.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5 * deadlyScaler)
             }
-            print("deadlyThing = ", deadlyThing)
             dispatch_async(dispatch_get_main_queue(), { () in
                 self.addChild(deadlyThing)
             })
             //let sleepRadius = Double(arc4random_uniform(UInt32(deathAppearanceIntervalRadius+1 * 2)))-deathAppearanceIntervalRadius
             let sleepRadius = Double(arc4random())/Double(UInt32.max)*(deathAppearanceIntervalRadius * 2) - deathAppearanceIntervalRadius
-            print("sleep plus minus = ", sleepRadius)
+            //print("sleep plus minus = ", sleepRadius)
             let sleepTime = (deathAppearanceInterval + sleepRadius)*1000000
+            print("deathAppearanceInterval = ", deathAppearanceInterval)
+            print("sleep time = ",sleepTime)
             if(sleepTime>0.25){
                 usleep(UInt32(sleepTime))
             }
@@ -479,7 +464,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
-        print("didbegincontact")
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
         if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
@@ -496,7 +480,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) &&
             (secondBody.categoryBitMask == PhysicsCategory.Death)) {
-                print("should die now")
                 fishDidCollideWithDeath(firstBody.node as! SKSpriteNode, death: secondBody.node as! SKSpriteNode)
         }
             
@@ -505,7 +488,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.TopWall)){
-            print("death hit top wall")
             if firstBody.node?.name == "anemone"{
                 let anemone = firstBody.node!
                 anemone.removeFromParent()
@@ -527,14 +509,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func fishDidCollideWithDeath(fish: SKSpriteNode, death: SKSpriteNode){
-        print("well at least it called the death method")
         fish.removeFromParent()
-        print("removed fish")
         alive = false;
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){
-        print("did collide with wall")
         let idkWhyThisDontWork = fishVelXComp
         //let fishImage = UIImage(named: "JesusFish.png")
         if(wall.name == "right wall"){
