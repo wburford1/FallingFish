@@ -264,7 +264,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let scoreboard = SKLabelNode(fontNamed: "Digital")
         scoreboard.position = CGPoint(x: size.width-size.width/2.9, y: size.height-size.height/20)
         scoreboard.text = "0000"
-        self.addChild(scoreboard)
+        dispatch_async(dispatch_get_main_queue(), { () in
+            self.addChild(scoreboard)
+        })
         var timeCheck = NSDate()
         
         while(alive){
@@ -318,8 +320,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             hsString += String(previousHighScore.first!.score)
             highScoreLabel.text = hsString
         }
-        /*deathView.frame = (self.view?.frame)!
-        deathView.backgroundColor = UIColor.clearColor()*/
+        print("eyyyy we got here")
+        let userInfo = NSMutableDictionary()
+        print("sound check")
+        userInfo.setValue(score, forKey: "score")
+        print("user info = ",userInfo)
+        NSNotificationCenter.defaultCenter().postNotificationName("ShowDeathScreen", object: nil, userInfo: userInfo as [NSObject : AnyObject])
+        
+        /*let deathView = DeathScreenView()
+        deathView.frame = (self.view?.frame)!
+        deathView.backgroundColor = UIColor.clearColor()
         
         let youDied = SKLabelNode(fontNamed: "Gothic")
         youDied.text = "YOU DIED"
@@ -347,7 +357,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         retry.frame = CGRectMake((self.view?.frame.size.width)!/2, (self.view?.frame.size.height)!/2, 100, 50)
         retry.addTarget(self, action: "onRetry:", forControlEvents: .TouchUpInside)
         deathScreenItems.addObject(retry)
-        self.view?.addSubview(retry)
+        self.view?.addSubview(retry)*/
     }
     
     func onRetry(sender:UIButton){

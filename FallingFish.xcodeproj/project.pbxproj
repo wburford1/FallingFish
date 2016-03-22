@@ -16,6 +16,7 @@
 		8211890F1C8791F700816F37 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890E1C8791F700816F37 /* MenuViewController.swift */; };
 		82671D4E1C8E60C10002A5A7 /* JesusFish_Flipped.png in Resources */ = {isa = PBXBuildFile; fileRef = 82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */; };
 		82671D561C8F298A0002A5A7 /* sea-anemone.png in Resources */ = {isa = PBXBuildFile; fileRef = 82671D551C8F298A0002A5A7 /* sea-anemone.png */; };
+		828D67401CA1D4320030FE78 /* DeathScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828D673F1CA1D4320030FE78 /* DeathScreenView.swift */; };
 		82CF70F71C89F602006DF5D0 /* JesusFish.png in Resources */ = {isa = PBXBuildFile; fileRef = 82CF70F61C89F602006DF5D0 /* JesusFish.png */; };
 		82E6169A1C8785F2005893B1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E616991C8785F2005893B1 /* AppDelegate.swift */; };
 		82E6169C1C8785F2005893B1 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 82E6169B1C8785F2005893B1 /* GameScene.sks */; };
@@ -57,6 +58,7 @@
 		8211890E1C8791F700816F37 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JesusFish_Flipped.png; sourceTree = "<group>"; };
 		82671D551C8F298A0002A5A7 /* sea-anemone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sea-anemone.png"; sourceTree = "<group>"; };
+		828D673F1CA1D4320030FE78 /* DeathScreenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeathScreenView.swift; sourceTree = "<group>"; };
 		82CF70F61C89F602006DF5D0 /* JesusFish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JesusFish.png; sourceTree = "<group>"; };
 		82E616961C8785F2005893B1 /* FallingFish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FallingFish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82E616991C8785F2005893B1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				59A429D71C920E7200509A89 /* flatWall.png */,
 				820C78DE1C8B44E8000C5913 /* solidWall.png */,
 				82671D551C8F298A0002A5A7 /* sea-anemone.png */,
+				828D673F1CA1D4320030FE78 /* DeathScreenView.swift */,
 			);
 			path = FallingFish;
 			sourceTree = "<group>";
@@ -380,6 +383,7 @@
 				8211890D1C878BDD00816F37 /* NavigationViewController.swift in Sources */,
 				8211890F1C8791F700816F37 /* MenuViewController.swift in Sources */,
 				82E6169E1C8785F2005893B1 /* GameScene.swift in Sources */,
+				828D67401CA1D4320030FE78 /* DeathScreenView.swift in Sources */,
 				82E616A01C8785F2005893B1 /* GameViewController.swift in Sources */,
 				82E6169A1C8785F2005893B1 /* AppDelegate.swift in Sources */,
 			);

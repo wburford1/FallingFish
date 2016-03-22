@@ -31,7 +31,7 @@ class GameViewController: UIViewController {
     }
 
     override func shouldAutorotate() -> Bool {
-        return true
+        return false
     }
 
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
@@ -49,5 +49,19 @@ class GameViewController: UIViewController {
 
     override func prefersStatusBarHidden() -> Bool {
         return true
+    }
+    
+    func showDeathScreen(notification:NSNotification) {
+        print("showing death screen in that method thang")
+        let score = notification.userInfo?["score"]
+        print("score = ",score)
+    }
+    
+    override func awakeFromNib() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDeathScreen:", name: "ShowDeathScreen", object: nil)
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 }
