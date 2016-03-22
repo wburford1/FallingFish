@@ -201,6 +201,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return bubble
     }
     
+    func makeCoinBubble() ->SKSpriteNode{
+        let coin = SKSpriteNode(imageNamed: "coin.png")
+        coin.size = CGSize(width: fish.size.width/4, height: fish.size.width/4)
+        coin.physicsBody = SKPhysicsBody(rectangleOfSize: coin.size)
+        coin.physicsBody?.categoryBitMask = PhysicsCategory.Coins
+        coin.physicsBody?.contactTestBitMask = PhysicsCategory.None
+        coin.physicsBody?.collisionBitMask = PhysicsCategory.None
+        coin.physicsBody?.affectedByGravity = true
+        coin.physicsBody?.dynamic = true
+        coin.physicsBody?.restitution = 1;
+        coin.physicsBody?.friction = 0;
+        coin.physicsBody?.linearDamping = 0;
+        coin.name = "coin"
+        
+        return coin    }
+    
     func makeFish() -> SKSpriteNode{
         let fish = SKSpriteNode(imageNamed: "JesusFish.png")
         let fishWidth = size.width/15
@@ -233,11 +249,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: right)
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
         let middleThread = NSThread(target: self, selector: "spawnBubbles", object: nil)
+        let coinThread = NSThread(target: self, selector: "spawnCoinBubbles", object: nil)
         deadlyLeftThread.start()
         deadlyRightThread.start()
         infinitStartTime = NSDate()
         scoreTracker.start()
         middleThread.start()
+        coinThread.start()
     }
     
     
@@ -351,13 +369,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var bubbleAppearanceInterval = 2
         let bubbleAppearanceIntervalRadius = 1.6
         var bubbleInterval = 1.0
-        let bubblyScaler  = Int(arc4random_uniform(3)) + 1
+        let bubblyScaler  = Int(arc4random_uniform(4)) + 2
         while(true){
             bubbleInterval /= (Double(bubblyScaler))
             let bubble = makeBubble()
 //            let spin = SKAction.rotateToAngle(CGFloat(M_PI/2.0), duration: 0)
 //            bubble.runAction(spin)
-            let possibleX = Int(arc4random_uniform(750))
+            let wallWidth = leftWall.size.width
+            let maxVal = UInt32(2*((self.view?.frame.width)!-wallWidth))
+            let possibleX = Int(arc4random_uniform(maxVal)) + Int(wallWidth)
             bubble.position = CGPoint(x: possibleX, y: 0)
 //            let var yVelocity = size.hesight/5
             bubble.physicsBody?.velocity = CGVector(dx: 0, dy: Int(size.height/5.0) * bubblyScaler)
@@ -378,12 +398,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 usleep(250000)
             }
-
-            
         }
     }
 
-    
+    func spawnCoinBubbles(){
+        var coinAppearanceInterval = 1.7
+        var coinAppearanceIntervalRadius = 1.3
+        var coinInterval = 1.0
+        let coinScaler  = Int(arc4random_uniform(4)) + 2
+        while(true){
+            coinInterval /= (Double(coinScaler))
+            let coin = makeCoinBubble()
+            let wallWidth = leftWall.size.width
+            let maxVal = UInt32(2*((self.view?.frame.width)!-wallWidth))
+            let possibleX = Int(arc4random_uniform(maxVal)) + Int(wallWidth)
+            coin.position = CGPoint(x: possibleX, y: 0)
+            coin.physicsBody?.velocity = CGVector(dx: 0, dy: Int(size.height/5.0) * bubblyScaler)
+            
+            
+            dispatch_async(dispatch_get_main_queue(), { () in
+                self.addChild(coin)
+            })
+            
+            let sleepRadius = Double(arc4random())/Double(UInt32.max)*(coinAppearanceIntervalRadius * 2) - coinAppearanceIntervalRadius
+            let sleepTime = (coinInterval + sleepRadius)*10000000
+            if(sleepTime>0){
+                usleep(UInt32(sleepTime))
+                
+            }
+            else{
+                
+                usleep(250000)
+            }
+        }
+
+        
+        
+    }
 
     
     func spawnRandomDeadlyThings(side: String){//not using this method anymore
