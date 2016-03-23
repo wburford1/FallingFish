@@ -54,7 +54,11 @@ class GameViewController: UIViewController {
     func showDeathScreen(notification:NSNotification) {
         print("showing death screen in that method thang")
         let score = notification.userInfo?["score"]
-        print("score = ",score)
+        
+        let deathScreen = DeathScreenView.init(frame: self.view.frame)
+        deathScreen.score = Int(score! as! NSNumber)
+        print("score = ",deathScreen.score)
+        self.view.addSubview(deathScreen)
     }
     
     override func awakeFromNib() {

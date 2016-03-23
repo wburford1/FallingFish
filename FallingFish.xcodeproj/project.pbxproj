@@ -14,6 +14,7 @@
 		820C78DF1C8B44E8000C5913 /* solidWall.png in Resources */ = {isa = PBXBuildFile; fileRef = 820C78DE1C8B44E8000C5913 /* solidWall.png */; };
 		8211890D1C878BDD00816F37 /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890C1C878BDD00816F37 /* NavigationViewController.swift */; };
 		8211890F1C8791F700816F37 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890E1C8791F700816F37 /* MenuViewController.swift */; };
+		82223F921CA3320300DFA9F7 /* replayButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 82223F911CA3320300DFA9F7 /* replayButton.png */; };
 		82671D4E1C8E60C10002A5A7 /* JesusFish_Flipped.png in Resources */ = {isa = PBXBuildFile; fileRef = 82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */; };
 		82671D561C8F298A0002A5A7 /* sea-anemone.png in Resources */ = {isa = PBXBuildFile; fileRef = 82671D551C8F298A0002A5A7 /* sea-anemone.png */; };
 		828D67401CA1D4320030FE78 /* DeathScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828D673F1CA1D4320030FE78 /* DeathScreenView.swift */; };
@@ -56,6 +57,7 @@
 		820C78DE1C8B44E8000C5913 /* solidWall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = solidWall.png; sourceTree = "<group>"; };
 		8211890C1C878BDD00816F37 /* NavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
 		8211890E1C8791F700816F37 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		82223F911CA3320300DFA9F7 /* replayButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = replayButton.png; sourceTree = "<group>"; };
 		82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JesusFish_Flipped.png; sourceTree = "<group>"; };
 		82671D551C8F298A0002A5A7 /* sea-anemone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sea-anemone.png"; sourceTree = "<group>"; };
 		828D673F1CA1D4320030FE78 /* DeathScreenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeathScreenView.swift; sourceTree = "<group>"; };
@@ -122,6 +124,22 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		82223F901CA3283B00DFA9F7 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				82CF70F61C89F602006DF5D0 /* JesusFish.png */,
+				82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */,
+				59CF73C71CA1D86700546B7B /* CoinBubble.png */,
+				59F858A41C96838300CA1C57 /* bubble.png */,
+				59F858A61C96860500CA1C57 /* coin.png */,
+				59A429D71C920E7200509A89 /* flatWall.png */,
+				820C78DE1C8B44E8000C5913 /* solidWall.png */,
+				82671D551C8F298A0002A5A7 /* sea-anemone.png */,
+				82223F911CA3320300DFA9F7 /* replayButton.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		82E6168D1C8785F1005893B1 = {
 			isa = PBXGroup;
 			children = (
@@ -152,20 +170,13 @@
 				82E6169D1C8785F2005893B1 /* GameScene.swift */,
 				82E6169F1C8785F2005893B1 /* GameViewController.swift */,
 				8211890E1C8791F700816F37 /* MenuViewController.swift */,
+				828D673F1CA1D4320030FE78 /* DeathScreenView.swift */,
 				82E616A11C8785F2005893B1 /* Main.storyboard */,
 				82E616A41C8785F2005893B1 /* Assets.xcassets */,
 				82E616A61C8785F2005893B1 /* LaunchScreen.storyboard */,
 				82E616A91C8785F2005893B1 /* Info.plist */,
 				8211890C1C878BDD00816F37 /* NavigationViewController.swift */,
-				82CF70F61C89F602006DF5D0 /* JesusFish.png */,
-				82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */,
-				59CF73C71CA1D86700546B7B /* CoinBubble.png */,
-				59F858A41C96838300CA1C57 /* bubble.png */,
-				59F858A61C96860500CA1C57 /* coin.png */,
-				59A429D71C920E7200509A89 /* flatWall.png */,
-				820C78DE1C8B44E8000C5913 /* solidWall.png */,
-				82671D551C8F298A0002A5A7 /* sea-anemone.png */,
-				828D673F1CA1D4320030FE78 /* DeathScreenView.swift */,
+				82223F901CA3283B00DFA9F7 /* Images */,
 			);
 			path = FallingFish;
 			sourceTree = "<group>";
@@ -308,6 +319,7 @@
 				82CF70F71C89F602006DF5D0 /* JesusFish.png in Resources */,
 				59F858A71C96860500CA1C57 /* coin.png in Resources */,
 				82E616A31C8785F2005893B1 /* Main.storyboard in Resources */,
+				82223F921CA3320300DFA9F7 /* replayButton.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
