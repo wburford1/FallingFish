@@ -61,8 +61,13 @@ class GameViewController: UIViewController {
         self.view.addSubview(deathScreen)
     }
     
+    func replayButtonPressed(notification:NSNotification) {
+        print("in vc!")
+    }
+    
     override func awakeFromNib() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDeathScreen:", name: "ShowDeathScreen", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "replayButtonPressed:", name: "ReplayButtonPressed", object: nil)
     }
     
     deinit {

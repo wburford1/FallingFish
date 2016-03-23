@@ -77,9 +77,15 @@ class DeathScreenView: UIView {
         self.addSubview(highScoreLabel)
         
         let replayWidth = self.frame.size.width/4
-        let replayHeight = replayWidth*(400.0/640.0)
+        let replayHeight = replayWidth*(277.0/601.0)
         let replayButton = UIButton.init(frame: CGRectMake(self.frame.width/4*3 - replayWidth/2, self.frame.height/4+labelHeight*4+2, replayWidth, replayHeight))
         replayButton.setImage(UIImage.init(named: "replayButton.png"), forState: UIControlState.Normal)
+        replayButton.addTarget(self, action: "replayButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
         self.addSubview(replayButton)
+    }
+    
+    func replayButtonPressed(sender:UIButton){
+        print("replay button pressed")
+        NSNotificationCenter.defaultCenter().postNotificationName("ReplayButtonPressed", object: nil, userInfo: nil)
     }
 }
