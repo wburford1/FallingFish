@@ -24,6 +24,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     lazy var infinitStartTime : NSDate = NSDate()
     lazy var infinitEndTime : NSDate = NSDate()
     lazy var fish : SKSpriteNode = SKSpriteNode()
+//    lazy var coin: SKSpriteNode = SKSpriteNode()
     lazy var walls : NSMutableArray = NSMutableArray()
     lazy var leftWall : SKSpriteNode = SKSpriteNode()
     lazy var rightWall : SKSpriteNode = SKSpriteNode()
@@ -206,7 +207,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         coin.size = CGSize(width: fish.size.width/4, height: fish.size.width/4)
         coin.physicsBody = SKPhysicsBody(rectangleOfSize: coin.size)
         coin.physicsBody?.categoryBitMask = PhysicsCategory.Coins
-        coin.physicsBody?.contactTestBitMask = PhysicsCategory.None
+        coin.physicsBody?.contactTestBitMask = PhysicsCategory.Coins
         coin.physicsBody?.collisionBitMask = PhysicsCategory.None
         coin.physicsBody?.affectedByGravity = true
         coin.physicsBody?.dynamic = true
@@ -555,7 +556,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 extraAnemones.addObject(anemone)
             }
         }
+            
+        else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && (secondBody.categoryBitMask == PhysicsCategory.Coins)){
+//                fishGotCoin(firstBody.node, coin: secondBody.node)
+                fishGotCoin(secondBody.node as! SKSpriteNode)
+        }
         
+        
+    
         else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.Wall)){
             //do nothing
         }
@@ -566,6 +574,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print(firstBody)
             print(secondBody)
         }
+        
+    }
+    
+    func fishGotCoin(coin: SKSpriteNode){
+        coin.removeFromParent()
+
         
     }
     
