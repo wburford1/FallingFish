@@ -412,8 +412,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     func spawnCoinBubbles(){
-        var coinAppearanceInterval = 1.7
-        var coinAppearanceIntervalRadius = 1.3
+        var coinAppearanceInterval = 4
+        var coinAppearanceIntervalRadius = 3.6
         var coinInterval = 1.0
         let coinScaler  = Int(arc4random_uniform(4)) + 2
         while(true){
