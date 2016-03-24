@@ -141,7 +141,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         button.frame = CGRectMake((self.view?.frame.size.width)!/2, (self.view?.frame.size.height)!/2, 100, 50)
 //        button.frame = CGRectMake(15, -50, 300, 500)
 
-        button.addTarget(self, action: "onPlay:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: "handlePlayButton:", forControlEvents: .TouchUpInside)
         
 
         self.view?.addSubview(button)
@@ -150,16 +150,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        playInfinitGame()
     }
     
-    
-    func onPlay(sender:UIButton){
-//        alive = true;
-        if sender.titleLabel?.text == "Play"{
-            startLabel.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5)
-        }
-        playInfinitGame()
+    func handlePlayButton(sender:UIButton) {
+        startLabel.physicsBody?.velocity = CGVector(dx: 0, dy: size.height/5)
         sender.removeFromSuperview()
-
+        onPlay()
     }
+    
+    func onPlay(){
+        playInfinitGame()
+    }
+    
     func makeAnemone() -> SKSpriteNode{
         var anemone : SKSpriteNode
         if extraAnemones.count>0 {
@@ -361,18 +361,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view?.addSubview(retry)*/
     }
     
-    func onRetry(sender:UIButton){
+    func onRetry(){
         fish = makeFish()
         self.addChild(fish)
-        for(var counter=0;counter<deathScreenItems.count;counter++){
+        /*for(var counter=0;counter<deathScreenItems.count;counter++){
             if let item = deathScreenItems[counter] as? SKLabelNode {
                 item.removeFromParent()
             }
             else if let item = deathScreenItems[counter] as? UIButton {
                 item.removeFromSuperview()
             }
-        }
-        onPlay(sender)
+        }*/
+        onPlay()
     }
     
     

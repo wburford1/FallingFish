@@ -10,11 +10,14 @@ import UIKit
 import SpriteKit
 
 class GameViewController: UIViewController {
+    var gameScene = GameScene()
+    var currentDeathScreen: DeathScreenView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         if let scene = GameScene(fileNamed:"GameScene") {
+            gameScene = scene
             // Configure the view.
             let skView = self.view as! SKView
             skView.showsFPS = true
@@ -59,10 +62,13 @@ class GameViewController: UIViewController {
         deathScreen.score = Int(score! as! NSNumber)
         print("score = ",deathScreen.score)
         self.view.addSubview(deathScreen)
+        currentDeathScreen = deathScreen
     }
     
     func replayButtonPressed(notification:NSNotification) {
-        print("in vc!")
+        currentDeathScreen?.removeFromSuperview()
+        currentDeathScreen = nil
+        gameScene.onRetry()
     }
     
     override func awakeFromNib() {

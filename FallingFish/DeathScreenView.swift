@@ -85,7 +85,6 @@ class DeathScreenView: UIView {
     }
     
     func replayButtonPressed(sender:UIButton){
-        print("replay button pressed")
         NSNotificationCenter.defaultCenter().postNotificationName("ReplayButtonPressed", object: nil, userInfo: nil)
     }
 }
