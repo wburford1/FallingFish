@@ -424,7 +424,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let maxVal = UInt32(2*((self.view?.frame.width)!-wallWidth))
             let possibleX = Int(arc4random_uniform(maxVal)) + Int(wallWidth)
             coin.position = CGPoint(x: possibleX, y: 0)
-            coin.physicsBody?.velocity = CGVector(dx: 0, dy: Int(size.height/5.0) * bubblyScaler)
+            coin.physicsBody?.velocity = CGVector(dx: 0, dy: 225)
             
             
             dispatch_async(dispatch_get_main_queue(), { () in
