@@ -21,6 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let bubblyScaler = Int(arc4random_uniform(3))
 
     lazy var deadlyScaler : CGFloat = 1
+    var coins = Int()
     lazy var infinitStartTime : NSDate = NSDate()
     lazy var infinitEndTime : NSDate = NSDate()
     lazy var fish : SKSpriteNode = SKSpriteNode()
@@ -251,12 +252,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
         let middleThread = NSThread(target: self, selector: "spawnBubbles", object: nil)
         let coinThread = NSThread(target: self, selector: "spawnCoinBubbles", object: nil)
+        let counterThread = NSThread(target: self, selector: "coinCounter", object: nil)
         deadlyLeftThread.start()
         deadlyRightThread.start()
         infinitStartTime = NSDate()
         scoreTracker.start()
         middleThread.start()
         coinThread.start()
+        counterThread.start()
     }
     
     
@@ -289,6 +292,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         })
     }
     
+    func coinCounter(){
+        let counter = SKLabelNode(fontNamed: "Digital")
+        counter.position = CGPoint(x: size.width/2.9, y: size.height-size.height/20)
+        counter.text = "0000"
+        dispatch_async(dispatch_get_main_queue(), { () in
+            self.addChild(counter)
+        })
+        
+        var timeCheck = NSDate()
+        
+        while(alive)
+        {
+            timeCheck = NSDate()
+            let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
+            counter.text = String(coins)
+            
+            usleep(10000)
+            
+        }
+        
+        infinitEndTime = timeCheck
+        counter.removeFromParent()
+        dispatch_async(dispatch_get_main_queue(), { () in
+            self.endInfinitGame()
+        })
+    
+    
+    }
+    
     func endInfinitGame(){
         let realm = try! Realm()
         //print("infintStartTime = ",infinitStartTime)
@@ -301,10 +333,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         predicate += String(score)
         let previousHighScore = realm.objects(HighScore).filter(predicate)
         let highScoreLabel = SKLabelNode(fontNamed: "Gothic")
+        let numberCoins = coins
+        
         /*try! realm.write{
             realm.deleteAll()
         }*/
-        if(previousHighScore.count<1){
+         if(previousHighScore.count<1){
             let newHighScore = HighScore()
             newHighScore.score = score
             newHighScore.name = "King Arthur"
@@ -560,6 +594,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && (secondBody.categoryBitMask == PhysicsCategory.Coins)){
 //                fishGotCoin(firstBody.node, coin: secondBody.node)
                 fishGotCoin(secondBody.node as! SKSpriteNode)
+                coins++;
         }
         
         
