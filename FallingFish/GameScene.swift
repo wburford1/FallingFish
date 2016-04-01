@@ -248,12 +248,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let left = "left"
         let right = "right"
 //        let middle = "middle"
-        let deadlyLeftThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: left)
-        let deadlyRightThread = NSThread(target: self, selector: "spawnRandomDeadlyThings:", object: right)
-        let scoreTracker = NSThread(target: self, selector: "trackScore", object: nil)
-        let middleThread = NSThread(target: self, selector: "spawnBubbles", object: nil)
-        let coinThread = NSThread(target: self, selector: "spawnCoinBubbles", object: nil)
-        let counterThread = NSThread(target: self, selector: "coinCounter", object: nil)
+        let deadlyLeftThread = NSThread(target: self, selector: #selector(GameScene.spawnRandomDeadlyThings(_:)), object: left)
+        let deadlyRightThread = NSThread(target: self, selector: #selector(GameScene.spawnRandomDeadlyThings(_:)), object: right)
+        let scoreTracker = NSThread(target: self, selector: #selector(GameScene.trackScore), object: nil)
+        let middleThread = NSThread(target: self, selector: #selector(GameScene.spawnBubbles), object: nil)
+        let coinThread = NSThread(target: self, selector: #selector(GameScene.spawnCoinBubbles), object: nil)
+        let counterThread = NSThread(target: self, selector: #selector(GameScene.coinCounter), object: nil)
         deadlyLeftThread.start()
         deadlyRightThread.start()
         infinitStartTime = NSDate()
