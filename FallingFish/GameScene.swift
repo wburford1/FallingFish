@@ -142,7 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         button.frame = CGRectMake((self.view?.frame.size.width)!/2, (self.view?.frame.size.height)!/2, 100, 50)
 //        button.frame = CGRectMake(15, -50, 300, 500)
 
-        button.addTarget(self, action: "handlePlayButton:", forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(GameScene.handlePlayButton(_:)), forControlEvents: .TouchUpInside)
         
 
         self.view?.addSubview(button)
@@ -163,12 +163,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func makeAnemone() -> SKSpriteNode{
         var anemone : SKSpriteNode
-        if extraAnemones.count>0 {
+        //multi-threading problems here
+        /*if extraAnemones.count>0 {
             let returning = extraAnemones.lastObject as! SKSpriteNode
             extraAnemones.removeLastObject()
             return returning
             
-        }
+        }*/
         anemone = SKSpriteNode(imageNamed: "sea-anemone.png")
         anemone.size = CGSize(width: fish.size.width/3, height: fish.size.width/3)
         anemone.physicsBody = SKPhysicsBody(rectangleOfSize: anemone.size)
@@ -299,29 +300,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         dispatch_async(dispatch_get_main_queue(), { () in
             self.addChild(counter)
         })
-        
-        var timeCheck = NSDate()
-        
         while(alive)
         {
-            timeCheck = NSDate()
-            let timeSinceStart: Double =  timeCheck.timeIntervalSinceDate(infinitStartTime)
             counter.text = String(coins)
-            
             usleep(10000)
-            
         }
-        
-        infinitEndTime = timeCheck
         counter.removeFromParent()
-        dispatch_async(dispatch_get_main_queue(), { () in
-            self.endInfinitGame()
-        })
-    
-    
     }
     
     func endInfinitGame(){
+        print("ending infinit game")
         let realm = try! Realm()
         //print("infintStartTime = ",infinitStartTime)
         //print("infinitEndTime = ",infinitEndTime)
@@ -594,12 +582,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else if((firstBody.categoryBitMask == PhysicsCategory.Fish) && (secondBody.categoryBitMask == PhysicsCategory.Coins)){
 //                fishGotCoin(firstBody.node, coin: secondBody.node)
                 fishGotCoin(secondBody.node as! SKSpriteNode)
-                coins++;
+                coins += 1;
         }
         
         
     
         else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.Wall)){
+            //do nothing
+        }
+        else if((firstBody.categoryBitMask == PhysicsCategory.Death) && (secondBody.categoryBitMask == PhysicsCategory.LowWall)){
             //do nothing
         }
         else{
@@ -619,8 +610,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func fishDidCollideWithDeath(fish: SKSpriteNode, death: SKSpriteNode){
+        print("called collide with death")
         fish.removeFromParent()
         alive = false;
+        print("finished collide with death")
     }
     
     func fishDidCollideWithWall(fish: SKSpriteNode, wall: SKSpriteNode){

@@ -14,6 +14,7 @@
 		820C78DF1C8B44E8000C5913 /* solidWall.png in Resources */ = {isa = PBXBuildFile; fileRef = 820C78DE1C8B44E8000C5913 /* solidWall.png */; };
 		8211890D1C878BDD00816F37 /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890C1C878BDD00816F37 /* NavigationViewController.swift */; };
 		8211890F1C8791F700816F37 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8211890E1C8791F700816F37 /* MenuViewController.swift */; };
+		824215EB1CAC67C600981E5C /* menuButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 824215EA1CAC67C600981E5C /* menuButton.png */; };
 		82671D4E1C8E60C10002A5A7 /* JesusFish_Flipped.png in Resources */ = {isa = PBXBuildFile; fileRef = 82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */; };
 		82671D561C8F298A0002A5A7 /* sea-anemone.png in Resources */ = {isa = PBXBuildFile; fileRef = 82671D551C8F298A0002A5A7 /* sea-anemone.png */; };
 		828D67401CA1D4320030FE78 /* DeathScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 828D673F1CA1D4320030FE78 /* DeathScreenView.swift */; };
@@ -57,6 +58,7 @@
 		820C78DE1C8B44E8000C5913 /* solidWall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = solidWall.png; sourceTree = "<group>"; };
 		8211890C1C878BDD00816F37 /* NavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
 		8211890E1C8791F700816F37 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		824215EA1CAC67C600981E5C /* menuButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menuButton.png; sourceTree = "<group>"; };
 		82671D4D1C8E60C10002A5A7 /* JesusFish_Flipped.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = JesusFish_Flipped.png; sourceTree = "<group>"; };
 		82671D551C8F298A0002A5A7 /* sea-anemone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sea-anemone.png"; sourceTree = "<group>"; };
 		828D673F1CA1D4320030FE78 /* DeathScreenView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeathScreenView.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				820C78DE1C8B44E8000C5913 /* solidWall.png */,
 				82671D551C8F298A0002A5A7 /* sea-anemone.png */,
 				8294A12C1CAC24D900EC0CE3 /* replayButton.png */,
+				824215EA1CAC67C600981E5C /* menuButton.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 				59F858A51C96838300CA1C57 /* bubble.png in Resources */,
 				59A429D81C920E7200509A89 /* flatWall.png in Resources */,
 				82E6169C1C8785F2005893B1 /* GameScene.sks in Resources */,
+				824215EB1CAC67C600981E5C /* menuButton.png in Resources */,
 				820C78DF1C8B44E8000C5913 /* solidWall.png in Resources */,
 				82671D561C8F298A0002A5A7 /* sea-anemone.png in Resources */,
 				59CF73C81CA1D86700546B7B /* CoinBubble.png in Resources */,

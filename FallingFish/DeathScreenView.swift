@@ -19,7 +19,7 @@ class DeathScreenView: UIView {
     
     override init (frame : CGRect) {
         super.init(frame : frame)
-        self.backgroundColor = UIColor.init(red: 255, green: 0, blue: 0, alpha: 0.5)
+        self.backgroundColor = UIColor.init(red: 255, green: 0, blue: 0, alpha: 0.25)
     }
     
     convenience init () {
@@ -76,15 +76,24 @@ class DeathScreenView: UIView {
         highScoreLabel.textAlignment = NSTextAlignment.Center
         self.addSubview(highScoreLabel)
         
-        let replayWidth = self.frame.size.width/4
-        let replayHeight = replayWidth*(261.0/601.0)
-        let replayButton = UIButton.init(frame: CGRectMake(self.frame.width/4*3 - replayWidth/2, self.frame.height/4+labelHeight*4+2, replayWidth, replayHeight))
+        let buttonWidth = self.frame.size.width/4
+        let buttonHeight = buttonWidth*(261.0/601.0)
+        let replayButton = UIButton.init(frame: CGRectMake(self.frame.width/4*3 - buttonWidth/2, self.frame.height/4+labelHeight*4+2, buttonWidth, buttonHeight))
         replayButton.setImage(UIImage.init(named: "replayButton.png"), forState: UIControlState.Normal)
-        replayButton.addTarget(self, action: "replayButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        replayButton.addTarget(self, action: #selector(replayButtonPressed), forControlEvents: UIControlEvents.TouchUpInside)
         self.addSubview(replayButton)
+        
+        let menuButton = UIButton.init(frame: CGRectMake(self.frame.width/4 - buttonWidth/2, self.frame.height/4 + labelHeight*4+2, buttonWidth, buttonHeight))
+        menuButton.setImage(UIImage.init(named: "menuButton.png"), forState: UIControlState.Normal)
+        menuButton.addTarget(self, action: #selector(menuButtonPressed), forControlEvents: UIControlEvents.TouchUpInside)
+        self.addSubview(menuButton)
     }
     
     func replayButtonPressed(sender:UIButton){
         NSNotificationCenter.defaultCenter().postNotificationName("ReplayButtonPressed", object: nil, userInfo: nil)
+    }
+    
+    func menuButtonPressed(sender:UIButton){
+        
     }
 }

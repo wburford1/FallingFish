@@ -66,14 +66,15 @@ class GameViewController: UIViewController {
     }
     
     func replayButtonPressed(notification:NSNotification) {
+        print("i'm in here whoo hoo")
         currentDeathScreen?.removeFromSuperview()
         currentDeathScreen = nil
         gameScene.onRetry()
     }
     
     override func awakeFromNib() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDeathScreen:", name: "ShowDeathScreen", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "replayButtonPressed:", name: "ReplayButtonPressed", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(showDeathScreen), name: "ShowDeathScreen", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(replayButtonPressed), name: "ReplayButtonPressed", object: nil)
     }
     
     deinit {
